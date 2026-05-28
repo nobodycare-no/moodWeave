@@ -20,5 +20,8 @@
 - [ ] Step 10：润色 + README + 发布 GitHub（~45min）
 
 ### 最新更新
-- 2026-05-28：[SOLO] 建立多 AI 协作协议体系。创建 `docs/superpowers/AGENTS.md`（完整协作规范）、`HANDOFF.md`（交接留言）、`REVIEW.md`（代码审查），更新 `AGENTS.md`（根目录快捷入口）。任何 AI 说"继续 MoodWeave"即可自动进入工作流。
-- 2026-05-28：[SOLO] Step 1 完成。Vue 3 + Vite + TS 项目已创建，暗色霓虹主题 CSS 变量体系就绪，Board/Card 类型定义完成，App.vue 带 Logo 的欢迎页展示正常。`npm run build` 零错误通过。
+- 2026-05-28：[SOLO] 协作协议升级到 v2.0，自动化 git pull/push 流程，用户只需说"继续 MoodWeave"和"今天结束了"两句话。
+- 2026-05-28：[SOLO] 设计文档迁移到项目内，清理工作目录，项目已推送到 GitHub 远程仓库。
+- 2026-05-28：[SOLO] 建立多 AI 协作协议体系。创建 `docs/superpowers/AGENTS.md`、`HANDOFF.md`、`REVIEW.md`。
+- 2026-05-28：[SOLO] Step 1 完成。Vue 3 + Vite + TS 脚手架 + 暗色霓虹主题 + Board/Card 类型定义 + App.vue 欢迎页。
+- 2026-05-28：[SOLO] 项目定稿：MoodWeave 灵感情绪板，布局B(双栏) + 暗色霓虹主题。设计文档和分步计划完成。
