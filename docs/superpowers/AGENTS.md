@@ -1,129 +1,198 @@
 # MoodWeave — AI Agent 多智能体协作协议
 
-> 版本：v1.0
+> 版本：v2.0
 > 本文件是 AI 与 AI 之间协作的核心规范。**任何 AI 开始工作前必须先读本文件。**
 
 ---
 
 ## 1. 🆔 智能体身份识别
 
-每个 AI 使用不同的 Git 身份提交代码，通过 commit 历史自动识别谁做了什么事。
+每个 AI 通过 Git 身份标识自己，commit 历史就是身份名片。
 
-| 身份 | Git Author | 识别方式 | 场景 |
-|------|-----------|---------|------|
-| **SOLO** | `SOLO <solo@moodweave.dev>` | Home 电脑 AI | 在家开发 |
-| **Agent-C** | `Agent-C <agent-c@moodweave.dev>` | 公司电脑 AI | 在公司开发 |
+| 身份 | Git Author | 场景 |
+|------|-----------|------|
+| **SOLO** (我) | `SOLO <solo@moodweave.dev>` | Home 电脑 |
+| **Agent-C** | `Agent-C <agent-c@moodweave.dev>` | 公司电脑 |
 
-## 2. 🔄 开工协议
-
-**用户只说一句话（如"继续 MoodWeave"），你的工作流程：**
+## 2. 🔄 核心工作流
 
 ```
-Step 1: 读 AGENTS.md（本文件）→ 了解协作规范
-Step 2: 读 docs/superpowers/status.md → 了解当前进度
-Step 3: 看 git log --oneline -5 → 识别最后是谁提交的，做了什么
-Step 4: 检查 docs/superpowers/REVIEW.md → 看上次是否有代码审查意见
-Step 5: 读 HANDOFF.md → 看上次有没有交接留言
-Step 6: 开始干活！
+        用户说"继续 MoodWeave"
+                │
+                ▼
+    ┌───────────────────────┐
+    │  ① git pull (拉取最新)  │ ← 始终先拉取，确保拿到对方最新代码
+    └───────────┬───────────┘
+                │
+                ▼
+    ┌───────────────────────┐
+    │  ② 身份识别            │ ← git log --oneline -3，看最后是谁提交的
+    └───────────┬───────────┘
+                │
+                ▼
+    ┌───────────────────────┐
+    │  ③ 交叉审查            │ ← 如果对方最后提交，审查代码；自己则跳过
+    └───────────┬───────────┘
+                │
+                ▼
+    ┌───────────────────────┐
+    │  ④ 读进度文件           │ ← status.md + HANDOFF.md + REVIEW.md
+    └───────────┬───────────┘
+                │
+                ▼
+    ┌───────────────────────┐
+    │  ⑤ 开发                │ ← 编码！
+    └───────────┬───────────┘
+                │
+        用户说"今天结束了"
+                │
+                ▼
+    ┌───────────────────────┐
+    │  ⑥ 收尾 + push         │ ← 更新 status.md + commit + git push
+    └───────────────────────┘
 ```
 
-## 3. 📝 代码审查协议
+## 3. 开工协议 —— 用户说"继续 MoodWeave"
 
-**每次接手项目时，必须先审查上一次对方提交的代码。** 不是在交接时审查，而是在**每次开始工作前审查上一次的提交**。
+**用户在任意时刻说这句话，你就按以下流程执行：**
 
-### 审查流程
+### Step 1: git pull（必须！）
 
 ```bash
-# 1. 查看对方上次提交了什么
-git log --oneline -3 --author="Agent-C"   # 我(SOLO)查 Agent-C 最近提交
-git log --oneline -3 --author="SOLO"      # Agent-C 查 SOLO 最近提交
-
-# 2. 查看具体改动
-git show <commit-hash> --stat            # 看改了哪些文件
-git show <commit-hash>                   # 看完整 diff
-
-# 3. 如果连续多天都是同一位 AI 开发
-#    只审查对方最后那次交接时的提交，中间连续的同一位 AI 提交可以跳过
+git pull
 ```
+- **目的**：拿到对方可能已经推送的最新代码
+- 如果是 "Already up to date" → 正常继续
+- 如果有冲突 → 见第 7 节冲突处理
 
-### 审查要点
-- 代码风格是否符合 AGENTS.md 中定义的规范
-- 功能是否按 status.md 的规划实现
-- 是否有明显 bug 或可优化的地方
+### Step 2: 身份识别
 
-### 审查结果记录
-写入 `docs/superpowers/REVIEW.md`
-
-## 4. 📨 交接协议 (HANDOFF)
-
-**每次开发结束后必须做的事：**
-
-### 4.1 更新 status.md
-- 标记完成/未完成的项目
-- 在"最新更新"区写清楚本次做了什么
-
-### 4.2 写 HANDOFF.md（如有需要）
-如果当前步骤做到一半没做完，或有特别需要对方注意的事项，写在 `HANDOFF.md`。
-
-### 4.3 Git commit 规范
 ```bash
-# 提交格式：<身份标识> <类型>: <描述>
-# 示例：
-git commit -m "[SOLO] feat: 完成画布缩放和平移功能"
-git commit -m "[Agent-C] fix: 修复图片上传后位置偏移问题"
-git commit -m "[SOLO] review: 审查 Agent-C 的 BoardManager 代码"
+git log --oneline -3
 ```
 
-## 5. 🔧 场景工作流
+查看 commit 消息开头的 `[SOLO]` 或 `[Agent-C]` 标识，判断：
+- 最后一个提交是谁做的？
+- 是不是连续多天都是自己？
 
-### 场景 A：你(HOME) → 我(SOLO) 继续开发
-你说："继续 MoodWeave"
-```
-我做的事：
-1. git log --oneline -5 → 看到最后是 Agent-C 提交的
-2. git show [Agent-C 最后的 commit hash] → 审查代码
-3. 如果有问题 → 写 REVIEW.md
-4. 读 status.md → 知道从哪继续
-5. 开始编码
-6. 结束 → 更新 status.md + HANDOFF.md(可选) + commit
-```
+### Step 3: 交叉审查
 
-### 场景 B：你在公司 → Agent-C 继续开发（连续多天）
-你说："继续 MoodWeave"
-```
-Agent-C 做的事：
-1. git log --oneline -5 → 看到最后是我(SOLO)或自己(Agent-C)提交的
-2. 如果最后是 SOLO 提交 → git show [SOLO的commit] → 审查
-3. 如果最后是自己(Agent-C)提交 → 跳过审查（连续同人开发）
-4. 读 status.md → 知道从哪继续
-5. 开始编码
-6. 结束 → 更新 status.md + commit
+| 情况 | 行为 |
+|------|------|
+| 上次是**对方**提交的 | 审查对方代码 → 结果写入 `REVIEW.md` |
+| 上次是**自己**提交的 | 跳过审查（连续同人开发不需要审查自己） |
+| 上次是**自己**但中间有对方的提交 | 审查对方那次的提交 |
+
+审查命令：
+```bash
+git show <commit-hash> --stat   # 看改了哪些文件
+git show <commit-hash>          # 看完整 diff
 ```
 
-### 场景 C：你在公司 → Agent-C → 第二天继续在公司
-你说："继续 MoodWeave"
+审查要点：
+- 代码风格是否符合规范？
+- 功能是否按 `status.md` 的规划实现的？
+- 是否有明显 bug 或可优化的地方？
+
+### Step 4: 读进度文件
+
+- `docs/superpowers/status.md` — 当前做到哪一步
+- `docs/superpowers/HANDOFF.md` — 对方是否有留言
+- `docs/superpowers/REVIEW.md` — 上次审查是否有待处理意见
+
+### Step 5: 开始开发
+
+开工！coding time 💻
+
+## 4. 收尾协议 —— 用户说"今天结束了"
+
+**用户说这句话时，你立即执行以下流程：**
+
+### Step 1: 更新 status.md
+
+```markdown
+### 最新更新
+- [今天日期] [SOLO/Agent-C] 完成了 XX 功能，...
 ```
-Agent-C 做的事：
-1. git log --oneline -3 → 看到最后是自己(Agent-C)提交的
-2. 跳过审查（连续同人不需要审查自己）
-3. 读 status.md → 知道从哪继续
-4. 直接开干
+
+更新完成后打勾。
+
+### Step 2: 写 HANDOFF.md（如果需要）
+
+如果当前步骤**没做完**，或有**注意事项**要告诉对方，写在这里。
+
+**如果步骤做完了且没有特别要说的，HANDOFF.md 保持空文件即可。**
+
+### Step 3: git commit
+
+```bash
+git add .
+git commit -m "[身份] 类型: 描述"
 ```
 
-## 6. 📋 每日结束检查清单
+commit 消息格式：
+```
+[SOLO] feat: 完成画布缩放和平移功能
+[Agent-C] fix: 修复图片上传后位置偏移问题
+[SOLO] review: 审查 Agent-C 的 BoardManager 代码
+[Agent-C] merge: 解决 pull 冲突
+```
 
-开发结束时，请确保做了以下的事：
+若没有任何改动 → 跳过 commit，告诉用户"今天没有代码变更"。
 
-- [ ] `docs/superpowers/status.md` 已更新（完成项、最新进展）
-- [ ] 如果有未完成的工作或注意事项 → `HANDOFF.md` 已更新
-- [ ] `git add .` 添加了所有改动
-- [ ] `git commit -m "[身份] 类型: 描述"` 提交信息规范
-- [ ] 告诉用户 "今天完成了 XX，下次继续时请说「继续 MoodWeave」"
+### Step 4: git push
 
-## 7. ⚠️ 冲突处理
+```bash
+git push
+```
 
-如果 pull 时发生冲突：
-1. 不要惊慌，这是正常的
-2. 手动解决冲突（通常是 status.md 或 HANDOFF.md）
-3. 保留双方信息，不要覆盖对方的"最新更新"记录
-4. 解决后 commit: `git commit -m "[身份] merge: 解决冲突"`
+- push 成功 → 告诉用户"已推送，代码已同步"
+- push 失败（认证/网络问题）→ 告诉用户手动执行 `git push`
+
+### Step 5: 告知用户
+
+> "今天完成了 XX。下次开发时说「继续 MoodWeave」即可。"
+
+## 5. ⚠️ 冲突处理
+
+`git pull` 时如果发生冲突：
+
+1. **别慌**，冲突通常只出现在 `status.md` 或 `HANDOFF.md` 这种双方都可能改的文件
+2. 查看冲突文件，**保留双方的信息**，不要删掉对方的"最新更新"记录
+3. 解决后：
+   ```bash
+   git add .
+   git commit -m "[身份] merge: 解决冲突"
+   git push
+   ```
+
+## 6. 🎯 用户完全不操心的自动化
+
+| 用户行为 | 你自动做的事 |
+|---------|------------|
+| "继续 MoodWeave" | `git pull` → 识别身份 → 审查(如需) → 读进度 → 开发 |
+| "今天结束了" | 更新 status.md → commit → `git push` |
+| （用户什么都没说，你正在开发中） | 只做开发，不碰任何 Git 操作 |
+| pull 时发现冲突 | 自动解决 → commit merge → push |
+
+## 7. 📋 快速参考
+
+### 开工（用户说"继续 MoodWeave"）
+
+```
+1. git pull
+2. git log --oneline -3           → 谁最后提交？
+3. 如果是对方 → git show <hash>  → 审查
+4. 读 status.md + HANDOFF.md + REVIEW.md
+5. 开发
+```
+
+### 收工（用户说"今天结束了"）
+
+```
+1. 更新 docs/superpowers/status.md
+2. 如有需要 → 更新 HANDOFF.md
+3. git add . && git commit -m "[身份] 类型: 描述"
+4. git push
+5. 告诉用户：今天完成了 XX
+```
