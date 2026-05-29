@@ -1,12 +1,54 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref } from 'vue'
 import { useCanvas } from '../composables/useCanvas'
 
 const { addCard } = useCanvas()
+const buttonRef = ref<HTMLButtonElement | null>(null)
 const fileInput = ref<HTMLInputElement | null>(null)
 const imageUrl = ref('')
 const isPanelOpen = ref(false)
 const errorMessage = ref('')
+const panelPosition = ref({ left: 0, top: 0, width: 300 })
+
+const panelStyle = computed(() => ({
+  left: `${panelPosition.value.left}px`,
+  top: `${panelPosition.value.top}px`,
+  width: `${panelPosition.value.width}px`,
+}))
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), max)
+}
+
+function updatePanelPosition() {
+  if (!buttonRef.value || typeof window === 'undefined') {
+    return
+  }
+
+  const viewportPadding = 16
+  const buttonRect = buttonRef.value.getBoundingClientRect()
+  const width = Math.max(180, Math.min(300, window.innerWidth - viewportPadding * 2))
+  const left = clamp(buttonRect.left, viewportPadding, window.innerWidth - width - viewportPadding)
+
+  panelPosition.value = {
+    left,
+    top: buttonRect.bottom + 10,
+    width,
+  }
+}
+
+async function togglePanel() {
+  isPanelOpen.value = !isPanelOpen.value
+
+  if (isPanelOpen.value) {
+    await nextTick()
+    updatePanelPosition()
+  }
+}
+
+function closePanel() {
+  isPanelOpen.value = false
+}
 
 function openFilePicker() {
   fileInput.value?.click()
@@ -40,7 +82,7 @@ async function handleFileChange(event: Event) {
   try {
     const dataUrl = await readFileAsDataUrl(file)
     addCard('image', dataUrl)
-    isPanelOpen.value = false
+    closePanel()
   } catch {
     errorMessage.value = 'Image could not be loaded.'
   } finally {
@@ -58,40 +100,63 @@ function addFromUrl() {
   addCard('image', trimmed)
   imageUrl.value = ''
   errorMessage.value = ''
-  isPanelOpen.value = false
+  closePanel()
 }
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('resize', updatePanelPosition)
+  window.addEventListener('scroll', updatePanelPosition, true)
+}
+
+onBeforeUnmount(() => {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  window.removeEventListener('resize', updatePanelPosition)
+  window.removeEventListener('scroll', updatePanelPosition, true)
+})
 </script>
 
 <template>
   <div class="add-image">
-    <button class="add-image-button" type="button" @click="isPanelOpen = !isPanelOpen">
+    <button
+      ref="buttonRef"
+      class="add-image-button"
+      type="button"
+      :aria-expanded="isPanelOpen"
+      aria-haspopup="dialog"
+      @click="togglePanel"
+    >
       Add image
     </button>
 
-    <div v-if="isPanelOpen" class="add-panel">
-      <button class="upload-button" type="button" @click="openFilePicker">Upload image</button>
-      <input
-        ref="fileInput"
-        class="file-input"
-        type="file"
-        accept="image/*"
-        aria-label="Upload image"
-        @change="handleFileChange"
-      />
-
-      <form class="url-form" @submit.prevent="addFromUrl">
+    <Teleport to="body">
+      <div v-if="isPanelOpen" class="add-panel" :style="panelStyle" @keydown.esc="closePanel">
+        <button class="upload-button" type="button" @click="openFilePicker">Upload image</button>
         <input
-          v-model="imageUrl"
-          class="url-input"
-          type="url"
-          placeholder="https://..."
-          aria-label="Image URL"
+          ref="fileInput"
+          class="file-input"
+          type="file"
+          accept="image/*"
+          aria-label="Upload image"
+          @change="handleFileChange"
         />
-        <button class="url-submit" type="submit">Use URL</button>
-      </form>
 
-      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
-    </div>
+        <form class="url-form" @submit.prevent="addFromUrl">
+          <input
+            v-model="imageUrl"
+            class="url-input"
+            type="url"
+            placeholder="https://..."
+            aria-label="Image URL"
+          />
+          <button class="url-submit" type="submit">Use URL</button>
+        </form>
+
+        <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+      </div>
+    </Teleport>
   </div>
 </template>
 
@@ -128,13 +193,10 @@ function addFromUrl() {
 }
 
 .add-panel {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  z-index: 60;
+  position: fixed;
+  z-index: 1000;
   display: grid;
   gap: 10px;
-  width: 280px;
   padding: 12px;
   border: 1px solid var(--border-color);
   border-radius: 8px;
