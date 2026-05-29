@@ -9,6 +9,14 @@ export interface Card {
   zIndex: number
 }
 
+export interface Asset {
+  id: string
+  type: Card['type']
+  name: string
+  content: string
+  createdAt: string
+}
+
 export interface Board {
   id: string
   name: string

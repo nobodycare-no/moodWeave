@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, watch } from 'vue'
 import CanvasBoard from './CanvasBoard.vue'
-import EditModal from './EditModal.vue'
 import TopToolbar from './TopToolbar.vue'
 import { useBoard } from '../composables/useBoard'
 import { useCanvas } from '../composables/useCanvas'
@@ -50,7 +49,6 @@ watch(
     <div class="board-shell">
       <TopToolbar />
       <CanvasBoard />
-      <EditModal />
     </div>
   </section>
 </template>

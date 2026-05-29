@@ -1,28 +1,36 @@
 <script setup lang="ts">
+import { ref } from 'vue'
+import AssetLibrary from './AssetLibrary.vue'
 import BoardManager from './BoardManager.vue'
 
 const navItems = [
-  { label: 'Boards', icon: 'B', active: true },
-  { label: 'Assets', icon: 'A', active: false },
-  { label: 'Export', icon: 'E', active: false },
-]
+  { id: 'boards', label: 'Boards', icon: 'B' },
+  { id: 'assets', label: 'Assets', icon: 'A' },
+] as const
+
+type SidebarPanel = (typeof navItems)[number]['id']
+
+const activePanel = ref<SidebarPanel>('boards')
 </script>
 
 <template>
   <nav class="sidebar" aria-label="Workspace tools">
     <div class="brand-mark" aria-label="MoodWeave">MW</div>
 
-    <BoardManager class="board-panel" />
+    <BoardManager v-if="activePanel === 'boards'" class="sidebar-panel" />
+    <AssetLibrary v-else class="sidebar-panel" />
 
     <div class="nav-group">
       <button
         v-for="item in navItems"
-        :key="item.label"
+        :key="item.id"
         class="nav-button"
-        :class="{ active: item.active }"
+        :class="{ active: item.id === activePanel }"
         type="button"
         :aria-label="item.label"
+        :aria-pressed="item.id === activePanel"
         :title="item.label"
+        @click="activePanel = item.id"
       >
         <span>{{ item.icon }}</span>
       </button>
@@ -111,7 +119,7 @@ const navItems = [
   color: var(--text-secondary);
 }
 
-.board-panel {
+.sidebar-panel {
   flex: 1;
   min-height: 0;
 }

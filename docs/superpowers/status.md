@@ -2,7 +2,7 @@
 
 > 最后更新：2026-05-29
 
-## 当前步骤：Step 8 — 导出 PNG
+## 当前步骤：Step 9 — AssetLibrary + 联动
 **状态：✅ 已完成**
 
 ### 已完成
@@ -14,12 +14,13 @@
 - [x] Step 6：TextCard + 文字编辑（~45min）
 - [x] Step 7：TopToolbar — 浮动工具栏（~30min）
 - [x] Step 8：导出 PNG（~30min）
+- [x] Step 9：AssetLibrary + 联动（~30min）
 
 ### 待完成
-- [ ] Step 9：AssetLibrary + 联动（~30min）
 - [ ] Step 10：润色 + README + 发布 GitHub（~45min）
 
 ### 最新更新
+- 2026-05-29：[Agent-C] Step 9 完成。新增 `useAssets` 和 `AssetLibrary`，支持将当前选中的图片或文本卡片保存到本地素材库，并从素材库一键插回当前 Board；侧栏新增 Boards / Assets 面板切换。本次同时修复 `EditModal` 重复渲染问题，并将顶部状态文案更新到 Step 9。
 - 2026-05-29：[Agent-C] Step 8 完成。新增 `useExport` 和 `ExportBtn`，通过原生 Canvas 将当前 Board 导出为 PNG；导出内容包含暗色背景、网格、图片卡片和文本卡片，支持本地上传图片，远程图片加载失败时会在导出图中显示占位提示。
 - 2026-05-29：[Agent-C] Step 7 完成。新增 `TopToolbar` 和 `DeleteBtn`，将添加图片、添加文本、删除选中卡片整合为画布顶部浮动工具栏；扩展 `useCanvas` 的 `selectedCard` 与 `removeSelectedCard`，支持删除当前选中的图片或文本卡片。
 - 2026-05-29：[Agent-C] Step 6 完成。新增 `AddTextBtn`、`TextCard`、`EditModal`，扩展 `useCanvas` 的文本编辑状态；画布现在可添加文本卡片、拖拽移动、双击编辑并保存到当前 Board。
