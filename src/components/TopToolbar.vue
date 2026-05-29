@@ -2,6 +2,7 @@
 import AddImageBtn from './AddImageBtn.vue'
 import AddTextBtn from './AddTextBtn.vue'
 import DeleteBtn from './DeleteBtn.vue'
+import ExportBtn from './ExportBtn.vue'
 </script>
 
 <template>
@@ -10,6 +11,8 @@ import DeleteBtn from './DeleteBtn.vue'
     <AddTextBtn />
     <span class="divider" aria-hidden="true"></span>
     <DeleteBtn />
+    <span class="divider" aria-hidden="true"></span>
+    <ExportBtn />
   </div>
 </template>
 
