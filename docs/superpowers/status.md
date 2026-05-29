@@ -2,7 +2,7 @@
 
 > 最后更新：2026-05-29
 
-## 当前步骤：Step 9 — AssetLibrary + 联动
+## 当前步骤：Step 10 — 润色 + README + 发布 GitHub
 **状态：✅ 已完成**
 
 ### 已完成
@@ -15,11 +15,13 @@
 - [x] Step 7：TopToolbar — 浮动工具栏（~30min）
 - [x] Step 8：导出 PNG（~30min）
 - [x] Step 9：AssetLibrary + 联动（~30min）
+- [x] Step 10：润色 + README + 发布 GitHub（~45min）
 
 ### 待完成
-- [ ] Step 10：润色 + README + 发布 GitHub（~45min）
+- 暂无
 
 ### 最新更新
+- 2026-05-29：[Agent-C] Step 10 完成。完成界面润色：侧栏改为 Boards / Assets 分段切换，素材库增加图片预览失败兜底，长 Board 名称改为省略显示，顶部状态移除开发步骤文案，空画布提示仅在无卡片时显示；同步更新 `README.md`，覆盖当前功能、脚本、存储与 PNG 导出注意事项。
 - 2026-05-29：[Agent-C] Step 9 完成。新增 `useAssets` 和 `AssetLibrary`，支持将当前选中的图片或文本卡片保存到本地素材库，并从素材库一键插回当前 Board；侧栏新增 Boards / Assets 面板切换。本次同时修复 `EditModal` 重复渲染问题，并将顶部状态文案更新到 Step 9。
 - 2026-05-29：[Agent-C] Step 8 完成。新增 `useExport` 和 `ExportBtn`，通过原生 Canvas 将当前 Board 导出为 PNG；导出内容包含暗色背景、网格、图片卡片和文本卡片，支持本地上传图片，远程图片加载失败时会在导出图中显示占位提示。
 - 2026-05-29：[Agent-C] Step 7 完成。新增 `TopToolbar` 和 `DeleteBtn`，将添加图片、添加文本、删除选中卡片整合为画布顶部浮动工具栏；扩展 `useCanvas` 的 `selectedCard` 与 `removeSelectedCard`，支持删除当前选中的图片或文本卡片。

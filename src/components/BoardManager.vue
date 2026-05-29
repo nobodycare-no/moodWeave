@@ -257,6 +257,9 @@ function removeBoard(id: string) {
   font-size: 13px;
   font-weight: 700;
   line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .board-meta {

@@ -80,13 +80,9 @@ onBeforeUnmount(() => {
     <div class="canvas-viewport">
       <div class="canvas-stage" :style="transformStyle">
         <div class="stage-grid" aria-hidden="true"></div>
-        <div class="stage-hint">
+        <div v-if="cards.length === 0" class="stage-hint">
           <p class="stage-label">Canvas</p>
-          <h2>Pan and zoom workspace</h2>
-          <p class="stage-copy">
-            Use the controls or scroll the wheel to zoom. Hold the middle or right mouse button to
-            move the board.
-          </p>
+          <h2>Mood board canvas</h2>
         </div>
         <ImageCard
           v-for="card in imageCards"
@@ -174,10 +170,4 @@ onBeforeUnmount(() => {
   line-height: 1.1;
 }
 
-.stage-copy {
-  color: var(--text-muted);
-  font-size: 14px;
-  line-height: 1.6;
-  max-width: 36ch;
-}
 </style>

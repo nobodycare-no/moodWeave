@@ -7,10 +7,11 @@ import type { Asset } from '../types'
 const { addAssetFromCard, assets, removeAsset } = useAssets()
 const { addCard, selectedCard } = useCanvas()
 const statusMessage = ref('')
+const previewErrors = ref<Record<string, boolean>>({})
 
-const selectedLabel = computed(() => {
+const saveButtonLabel = computed(() => {
   if (!selectedCard.value) {
-    return 'Select a card'
+    return 'Save selection'
   }
 
   return selectedCard.value.type === 'image' ? 'Save image' : 'Save text'
@@ -34,6 +35,14 @@ function insertAsset(asset: Asset) {
 function deleteAsset(asset: Asset) {
   removeAsset(asset.id)
   statusMessage.value = `${asset.name} removed.`
+  delete previewErrors.value[asset.id]
+}
+
+function markPreviewError(id: string) {
+  previewErrors.value = {
+    ...previewErrors.value,
+    [id]: true,
+  }
 }
 </script>
 
@@ -53,7 +62,7 @@ function deleteAsset(asset: Asset) {
       :disabled="!selectedCard"
       @click="saveSelectedAsset"
     >
-      {{ selectedLabel }}
+      {{ saveButtonLabel }}
     </button>
 
     <p v-if="statusMessage" class="status-message" role="status">{{ statusMessage }}</p>
@@ -62,11 +71,15 @@ function deleteAsset(asset: Asset) {
       <article v-for="asset in assets" :key="asset.id" class="asset-item" role="listitem">
         <button class="asset-preview" type="button" @click="insertAsset(asset)">
           <img
-            v-if="asset.type === 'image'"
+            v-if="asset.type === 'image' && !previewErrors[asset.id]"
             class="image-preview"
             :src="asset.content"
             :alt="asset.name"
+            @error="markPreviewError(asset.id)"
           />
+          <div v-else-if="asset.type === 'image'" class="asset-fallback">
+            <span>IMG</span>
+          </div>
           <span v-else class="text-preview">{{ asset.content }}</span>
         </button>
 
@@ -214,6 +227,20 @@ function deleteAsset(asset: Asset) {
   border-color: rgba(233, 69, 96, 0.35);
 }
 
+.asset-fallback {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  background:
+    linear-gradient(135deg, rgba(233, 69, 96, 0.14), rgba(83, 52, 131, 0.16)),
+    rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
 .image-preview {
   display: block;
   width: 100%;
@@ -223,6 +250,8 @@ function deleteAsset(asset: Asset) {
 
 .text-preview {
   display: -webkit-box;
+  width: 100%;
+  height: 100%;
   padding: 10px;
   color: var(--text-secondary);
   font-size: 12px;
