@@ -21,6 +21,7 @@
 - 暂无
 
 ### 最新更新
+- 2026-05-29：[Agent-C] 修复 localStorage 配额超限引发的未处理异常。`useBoard` 和 `useAssets` 的持久化写入现在会捕获 `QuotaExceededError` 并在界面展示可读提示，不再让 Vue watcher 直接崩溃；本地上传图片改为先压缩为较小的 WebP data URL，降低触发配额上限的概率。已用 Chrome DevTools MCP 验证在受控配额超限场景下只出现可控 warning，不再出现 `Uncaught (in promise)`。
 - 2026-05-29：[Agent-C] 使用 Chrome DevTools MCP 完成浏览器实测调试。确认 AddImage 弹层在桌面视口正常；在窄视口发现顶部工具栏单行溢出、弹层与换行工具栏重叠的问题，已将 `TopToolbar` 改为可换行并受父容器宽度约束，同时让 AddImage 弹层按按钮底部和整个工具栏底部的较大值定位；补齐 Board 与图片表单字段的 `id/name`，消除浏览器表单 issue。实测 Add image URL、素材保存与素材插回流程正常。
 - 2026-05-29：[Agent-C] 修复 AddImage 弹层边距问题。`AddImageBtn` 改为通过 `Teleport` 渲染到 `body`，使用 fixed 定位并按视口 16px 安全边距夹紧位置，避免弹层受顶部工具栏定位、父容器或画布层级影响；补充 `aria-expanded`、`aria-haspopup` 与 Esc 关闭。
 - 2026-05-29：[Agent-C] Step 10 完成。完成界面润色：侧栏改为 Boards / Assets 分段切换，素材库增加图片预览失败兜底，长 Board 名称改为省略显示，顶部状态移除开发步骤文案，空画布提示仅在无卡片时显示；同步更新 `README.md`，覆盖当前功能、脚本、存储与 PNG 导出注意事项。

@@ -6,7 +6,7 @@ import { useBoard } from '../composables/useBoard'
 import { useCanvas } from '../composables/useCanvas'
 import { useZoom } from '../composables/useZoom'
 
-const { currentBoard } = useBoard()
+const { currentBoard, storageError } = useBoard()
 const { cancelTextEdit, cards, deselectAll } = useCanvas()
 const { resetZoom, scale, zoomIn, zoomOut } = useZoom()
 
@@ -32,6 +32,8 @@ watch(
           <span class="card-count">{{ cards.length }} cards</span>
         </div>
       </div>
+
+      <p v-if="storageError" class="storage-warning" role="status">{{ storageError }}</p>
 
       <div class="zoom-controls" aria-label="Canvas zoom controls">
         <button class="zoom-button" type="button" aria-label="Zoom out" title="Zoom out" @click="zoomOut()">
@@ -115,6 +117,14 @@ watch(
   color: var(--text-muted);
   font-size: 11px;
   line-height: 1.1;
+}
+
+.storage-warning {
+  max-width: 42ch;
+  color: #ffb4bf;
+  font-size: 12px;
+  line-height: 1.35;
+  text-align: right;
 }
 
 .zoom-controls {

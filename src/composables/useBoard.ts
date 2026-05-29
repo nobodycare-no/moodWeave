@@ -8,6 +8,7 @@ const activeBoardId = ref<string | null>(null)
 
 let initialized = false
 let hydrated = false
+const storageError = ref('')
 
 function createId(prefix: string): string {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
@@ -120,7 +121,16 @@ function persistStorage() {
     activeBoardId: activeBoardId.value,
   }
 
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload))
+  try {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload))
+    storageError.value = ''
+  } catch (error) {
+    storageError.value =
+      error instanceof DOMException && error.name === 'QuotaExceededError'
+        ? 'Browser storage is full. Remove boards or use smaller images before adding more content.'
+        : 'Board changes could not be saved locally.'
+    console.warn(storageError.value, error)
+  }
 }
 
 function ensureDefaultBoard() {
@@ -245,6 +255,7 @@ export function useBoard() {
     activeBoardId,
     currentBoard,
     boardCount,
+    storageError,
     createBoard,
     deleteBoard,
     renameBoard,

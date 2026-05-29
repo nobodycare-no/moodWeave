@@ -9,6 +9,8 @@ const imageUrl = ref('')
 const isPanelOpen = ref(false)
 const errorMessage = ref('')
 const panelPosition = ref({ left: 0, top: 0, width: 300 })
+const MAX_IMAGE_EDGE = 1600
+const IMAGE_QUALITY = 0.84
 
 const panelStyle = computed(() => ({
   left: `${panelPosition.value.left}px`,
@@ -72,6 +74,54 @@ function readFileAsDataUrl(file: File): Promise<string> {
   })
 }
 
+function loadImage(source: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const image = new Image()
+    image.addEventListener('load', () => resolve(image))
+    image.addEventListener('error', () => reject(new Error('Unable to decode image')))
+    image.src = source
+  })
+}
+
+async function optimizeRasterImage(file: File): Promise<string> {
+  const source = URL.createObjectURL(file)
+
+  try {
+    const image = await loadImage(source)
+    const width = image.naturalWidth || image.width
+    const height = image.naturalHeight || image.height
+    const scale = Math.min(1, MAX_IMAGE_EDGE / Math.max(width, height))
+    const outputWidth = Math.max(1, Math.round(width * scale))
+    const outputHeight = Math.max(1, Math.round(height * scale))
+
+    const canvas = document.createElement('canvas')
+    canvas.width = outputWidth
+    canvas.height = outputHeight
+
+    const context = canvas.getContext('2d')
+    if (!context) {
+      throw new Error('Canvas is not available')
+    }
+
+    context.drawImage(image, 0, 0, outputWidth, outputHeight)
+    return canvas.toDataURL('image/webp', IMAGE_QUALITY)
+  } finally {
+    URL.revokeObjectURL(source)
+  }
+}
+
+async function readImageFile(file: File): Promise<string> {
+  if (file.type === 'image/svg+xml') {
+    return readFileAsDataUrl(file)
+  }
+
+  try {
+    return await optimizeRasterImage(file)
+  } catch {
+    return readFileAsDataUrl(file)
+  }
+}
+
 async function handleFileChange(event: Event) {
   const target = event.target as HTMLInputElement
   const file = target.files?.[0]
@@ -82,7 +132,7 @@ async function handleFileChange(event: Event) {
   errorMessage.value = ''
 
   try {
-    const dataUrl = await readFileAsDataUrl(file)
+    const dataUrl = await readImageFile(file)
     addCard('image', dataUrl)
     closePanel()
   } catch {

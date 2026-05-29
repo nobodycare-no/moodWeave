@@ -4,7 +4,7 @@ import { useAssets } from '../composables/useAssets'
 import { useCanvas } from '../composables/useCanvas'
 import type { Asset } from '../types'
 
-const { addAssetFromCard, assets, removeAsset } = useAssets()
+const { addAssetFromCard, assets, removeAsset, storageError } = useAssets()
 const { addCard, selectedCard } = useCanvas()
 const statusMessage = ref('')
 const previewErrors = ref<Record<string, boolean>>({})
@@ -65,7 +65,8 @@ function markPreviewError(id: string) {
       {{ saveButtonLabel }}
     </button>
 
-    <p v-if="statusMessage" class="status-message" role="status">{{ statusMessage }}</p>
+    <p v-if="storageError" class="status-message error" role="status">{{ storageError }}</p>
+    <p v-else-if="statusMessage" class="status-message" role="status">{{ statusMessage }}</p>
 
     <div v-if="assets.length" class="asset-list" role="list" aria-label="Saved assets">
       <article v-for="asset in assets" :key="asset.id" class="asset-item" role="listitem">
@@ -192,6 +193,10 @@ function markPreviewError(id: string) {
   color: var(--text-secondary);
   font-size: 12px;
   line-height: 1.4;
+}
+
+.status-message.error {
+  color: #ffb4bf;
 }
 
 .asset-list {

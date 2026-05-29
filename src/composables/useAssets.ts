@@ -4,6 +4,7 @@ import type { Asset, Card } from '../types'
 const STORAGE_KEY = 'moodweave.assets.v1'
 
 const assets = ref<Asset[]>([])
+const storageError = ref('')
 let initialized = false
 let hydrated = false
 
@@ -74,7 +75,16 @@ function persistStorage() {
     return
   }
 
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(assets.value))
+  try {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(assets.value))
+    storageError.value = ''
+  } catch (error) {
+    storageError.value =
+      error instanceof DOMException && error.name === 'QuotaExceededError'
+        ? 'Browser storage is full. Remove assets or use smaller images before saving more content.'
+        : 'Assets could not be saved locally.'
+    console.warn(storageError.value, error)
+  }
 }
 
 function ensureInitialized() {
@@ -136,6 +146,7 @@ export function useAssets() {
     assets,
     imageAssets,
     textAssets,
+    storageError,
     addAssetFromCard,
     removeAsset,
   }
