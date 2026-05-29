@@ -75,6 +75,7 @@ function endDrag(event: PointerEvent) {
     @pointermove="moveDrag"
     @pointerup="endDrag"
     @pointercancel="endDrag"
+    @click.stop
   >
     <img class="image-preview" :src="card.content" alt="" draggable="false" />
     <div class="image-overlay">

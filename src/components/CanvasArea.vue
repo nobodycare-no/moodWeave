@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import AddImageBtn from './AddImageBtn.vue'
 import CanvasBoard from './CanvasBoard.vue'
 import { useBoard } from '../composables/useBoard'
@@ -7,10 +7,17 @@ import { useCanvas } from '../composables/useCanvas'
 import { useZoom } from '../composables/useZoom'
 
 const { currentBoard } = useBoard()
-const { cards } = useCanvas()
+const { cards, deselectAll } = useCanvas()
 const { resetZoom, scale, zoomIn, zoomOut } = useZoom()
 
 const zoomPercent = computed(() => `${Math.round(scale.value * 100)}%`)
+
+watch(
+  () => currentBoard.value?.id,
+  () => {
+    deselectAll()
+  },
+)
 </script>
 
 <template>
@@ -58,6 +65,8 @@ const zoomPercent = computed(() => `${Math.round(scale.value * 100)}%`)
 }
 
 .canvas-topbar {
+  position: relative;
+  z-index: 30;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -158,6 +167,8 @@ const zoomPercent = computed(() => `${Math.round(scale.value * 100)}%`)
 }
 
 .board-shell {
+  position: relative;
+  z-index: 1;
   flex: 1;
   min-height: 0;
 }

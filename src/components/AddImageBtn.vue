@@ -131,7 +131,7 @@ function addFromUrl() {
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
-  z-index: 20;
+  z-index: 60;
   display: grid;
   gap: 10px;
   width: 280px;

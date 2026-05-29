@@ -20,6 +20,7 @@
 - [ ] Step 10：润色 + README + 发布 GitHub（~45min）
 
 ### 最新更新
+- 2026-05-29：[Agent-C] 完成一次缺陷修复审查。修正 AddImage 弹层层级被画布遮挡的问题，调整画布顶部层级与弹层 z-index；修正 CanvasBoard 的卡片过滤和提示文案；补上切换 Board 时清理选中态，避免跨板残留。
 - 2026-05-29：[Agent-C] 完善协作协议到 v2.1，新增交付范围判定、开工检查清单、审查风险说明与交接模板字段，避免将“最后改动是文档”误判为无需审查。
 - 2026-05-29：[Agent-C] Step 5 完成。新增 `useCanvas`、`AddImageBtn`、`ImageCard`，支持本地上传或 URL 添加图片卡片，图片卡片可选中并在缩放画布中拖拽移动。本次交付同时修改了 `CanvasArea`、`CanvasBoard`、`useZoom`、`App.vue` 以及进度文件本身。
 - 2026-05-29：[Agent-C] Step 4 完成。新增 `useZoom`、`CanvasArea`、`CanvasBoard`，右侧工作区支持滚轮缩放与中键/右键拖拽平移。

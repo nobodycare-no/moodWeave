@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, ref } from 'vue'
+import { computed, onBeforeUnmount, ref } from 'vue'
 import ImageCard from './ImageCard.vue'
 import { useCanvas } from '../composables/useCanvas'
 import { useZoom } from '../composables/useZoom'
@@ -7,6 +7,7 @@ import { useZoom } from '../composables/useZoom'
 const { cards, deselectAll, selectedCardId } = useCanvas()
 const { handlePanEnd, handlePanMove, handlePanStart, handleWheel, transformStyle } = useZoom()
 const isDragging = ref(false)
+const imageCards = computed(() => cards.value.filter((card) => card.type === 'image'))
 
 function startPan(event: PointerEvent) {
   if (event.button === 0) {
@@ -80,12 +81,12 @@ onBeforeUnmount(() => {
           <p class="stage-label">Canvas</p>
           <h2>Pan and zoom workspace</h2>
           <p class="stage-copy">
-            Use the controls or hold the middle / right mouse button to move the board.
-            Ctrl or Cmd plus the wheel changes the zoom level.
+            Use the controls or scroll the wheel to zoom. Hold the middle or right mouse button to
+            move the board.
           </p>
         </div>
         <ImageCard
-          v-for="card in cards"
+          v-for="card in imageCards"
           :key="card.id"
           :card="card"
           :selected="card.id === selectedCardId"
