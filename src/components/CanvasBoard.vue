@@ -1,11 +1,18 @@
 <script setup lang="ts">
 import { onBeforeUnmount, ref } from 'vue'
+import ImageCard from './ImageCard.vue'
+import { useCanvas } from '../composables/useCanvas'
 import { useZoom } from '../composables/useZoom'
 
+const { cards, deselectAll, selectedCardId } = useCanvas()
 const { handlePanEnd, handlePanMove, handlePanStart, handleWheel, transformStyle } = useZoom()
 const isDragging = ref(false)
 
 function startPan(event: PointerEvent) {
+  if (event.button === 0) {
+    deselectAll()
+  }
+
   if (event.button !== 1 && event.button !== 2) {
     return
   }
@@ -77,7 +84,12 @@ onBeforeUnmount(() => {
             Ctrl or Cmd plus the wheel changes the zoom level.
           </p>
         </div>
-        <slot />
+        <ImageCard
+          v-for="card in cards"
+          :key="card.id"
+          :card="card"
+          :selected="card.id === selectedCardId"
+        />
       </div>
     </div>
   </div>

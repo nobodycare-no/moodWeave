@@ -2,7 +2,7 @@
 
 > 最后更新：2026-05-29
 
-## 当前步骤：Step 4 — 画布 + 缩放平移
+## 当前步骤：Step 5 — ImageCard + 添加图片
 **状态：✅ 已完成**
 
 ### 已完成
@@ -10,9 +10,9 @@
 - [x] Step 2：MainLayout + Sidebar 骨架（~30min）
 - [x] Step 3：BoardManager — 项目管理（~45min）
 - [x] Step 4：CanvasBoard — 画布 + 缩放平移（~45min）
+- [x] Step 5：ImageCard + 添加图片（~45min）
 
 ### 待完成
-- [ ] Step 5：ImageCard + 添加图片（~45min）
 - [ ] Step 6：TextCard + 文字编辑（~45min）
 - [ ] Step 7：TopToolbar — 浮动工具栏（~30min）
 - [ ] Step 8：导出 PNG（~30min）
@@ -20,6 +20,7 @@
 - [ ] Step 10：润色 + README + 发布 GitHub（~45min）
 
 ### 最新更新
+- 2026-05-29：[Agent-C] Step 5 完成。新增 `useCanvas`、`AddImageBtn`、`ImageCard`，支持本地上传或 URL 添加图片卡片，图片卡片可选中并在缩放画布中拖拽移动。
 - 2026-05-29：[Agent-C] Step 4 完成。新增 `useZoom`、`CanvasArea`、`CanvasBoard`，右侧工作区支持滚轮缩放与中键/右键拖拽平移。
 - 2026-05-29：[Agent-C] Step 3 完成。新增 `useBoard` 本地存储状态层和 `BoardManager` 面板，支持创建、切换、重命名、删除 Board，刷新后保留数据。
 - 2026-05-29：[Agent-C] Step 2 完成。新增 MainLayout + Sidebar 双栏骨架，App.vue 切到工作区占位界面。

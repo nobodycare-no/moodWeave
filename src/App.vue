@@ -4,7 +4,7 @@ import MainLayout from './components/MainLayout.vue'
 import Sidebar from './components/Sidebar.vue'
 import { useBoard } from './composables/useBoard'
 
-const { currentBoard, boardCount } = useBoard()
+const { currentBoard } = useBoard()
 </script>
 
 <template>
@@ -20,9 +20,9 @@ const { currentBoard, boardCount } = useBoard()
 
       <div class="header-status">
         <span class="status-dot" aria-hidden="true"></span>
-        <span>Step 4 canvas movement</span>
+        <span>{{ currentBoard?.name ?? 'Mood Board' }}</span>
         <span class="status-separator">/</span>
-        <span>{{ boardCount }} boards</span>
+        <span>Step 5 image cards</span>
       </div>
     </header>
 

@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import AddImageBtn from './AddImageBtn.vue'
 import CanvasBoard from './CanvasBoard.vue'
 import { useBoard } from '../composables/useBoard'
+import { useCanvas } from '../composables/useCanvas'
 import { useZoom } from '../composables/useZoom'
 
 const { currentBoard } = useBoard()
+const { cards } = useCanvas()
 const { resetZoom, scale, zoomIn, zoomOut } = useZoom()
 
 const zoomPercent = computed(() => `${Math.round(scale.value * 100)}%`)
@@ -18,19 +21,24 @@ const zoomPercent = computed(() => `${Math.round(scale.value * 100)}%`)
         <div>
           <p class="board-label">Active board</p>
           <h1>{{ currentBoard?.name ?? 'Mood Board' }}</h1>
+          <span class="card-count">{{ cards.length }} cards</span>
         </div>
       </div>
 
-      <div class="zoom-controls" aria-label="Canvas zoom controls">
-        <button class="zoom-button" type="button" aria-label="Zoom out" title="Zoom out" @click="zoomOut()">
-          -
-        </button>
-        <button class="zoom-readout" type="button" title="Reset zoom" @click="resetZoom">
-          {{ zoomPercent }}
-        </button>
-        <button class="zoom-button" type="button" aria-label="Zoom in" title="Zoom in" @click="zoomIn()">
-          +
-        </button>
+      <div class="topbar-actions">
+        <AddImageBtn />
+
+        <div class="zoom-controls" aria-label="Canvas zoom controls">
+          <button class="zoom-button" type="button" aria-label="Zoom out" title="Zoom out" @click="zoomOut()">
+            -
+          </button>
+          <button class="zoom-readout" type="button" title="Reset zoom" @click="resetZoom">
+            {{ zoomPercent }}
+          </button>
+          <button class="zoom-button" type="button" aria-label="Zoom in" title="Zoom in" @click="zoomIn()">
+            +
+          </button>
+        </div>
       </div>
     </header>
 
@@ -92,6 +100,20 @@ const zoomPercent = computed(() => `${Math.round(scale.value * 100)}%`)
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.card-count {
+  display: block;
+  margin-top: 2px;
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.1;
+}
+
+.topbar-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .zoom-controls {

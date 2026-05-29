@@ -62,9 +62,14 @@ function resetZoom() {
 function handleWheel(event: WheelEvent) {
   event.preventDefault()
 
+  const target = event.currentTarget instanceof HTMLElement ? event.currentTarget : null
+  const bounds = target?.getBoundingClientRect()
   const direction = Math.sign(event.deltaY)
   const delta = direction > 0 ? -SCALE_STEP : SCALE_STEP
-  zoomBy(delta, { x: event.clientX, y: event.clientY })
+  zoomBy(delta, {
+    x: bounds ? event.clientX - bounds.left : event.clientX,
+    y: bounds ? event.clientY - bounds.top : event.clientY,
+  })
 }
 
 function handlePanStart(event: PointerEvent) {
