@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import CanvasArea from './components/CanvasArea.vue'
 import MainLayout from './components/MainLayout.vue'
 import Sidebar from './components/Sidebar.vue'
 import { useBoard } from './composables/useBoard'
@@ -19,7 +20,7 @@ const { currentBoard, boardCount } = useBoard()
 
       <div class="header-status">
         <span class="status-dot" aria-hidden="true"></span>
-        <span>{{ currentBoard?.name ?? 'Mood Board' }}</span>
+        <span>Step 4 canvas movement</span>
         <span class="status-separator">/</span>
         <span>{{ boardCount }} boards</span>
       </div>
@@ -32,19 +33,7 @@ const { currentBoard, boardCount } = useBoard()
         </template>
 
         <template #canvas>
-          <section class="canvas-placeholder" aria-label="Canvas preview">
-            <div class="canvas-frame">
-              <div class="canvas-grid"></div>
-              <div class="canvas-copy">
-                <p class="eyebrow">Workspace</p>
-                <h1>Canvas area placeholder</h1>
-                <p class="description">
-                  The right side is reserved for the board surface, pan and zoom interactions, and
-                  future card rendering.
-                </p>
-              </div>
-            </div>
-          </section>
+          <CanvasArea />
         </template>
       </MainLayout>
     </main>
@@ -138,63 +127,4 @@ const { currentBoard, boardCount } = useBoard()
   min-height: 0;
 }
 
-.canvas-placeholder {
-  width: 100%;
-  height: 100%;
-  padding: 16px;
-}
-
-.canvas-frame {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  overflow: hidden;
-  background:
-    radial-gradient(circle at top left, rgba(233, 69, 96, 0.08), transparent 22%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01)),
-    var(--bg-primary);
-  box-shadow: var(--shadow-lg);
-}
-
-.canvas-grid {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-  background-size: 48px 48px;
-  opacity: 0.35;
-  pointer-events: none;
-}
-
-.canvas-copy {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  gap: 10px;
-  max-width: 360px;
-  padding: 28px;
-}
-
-.eyebrow {
-  color: var(--accent-primary);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0;
-  text-transform: uppercase;
-}
-
-.canvas-copy h1 {
-  color: var(--text-primary);
-  font-size: 28px;
-  line-height: 1.1;
-}
-
-.description {
-  color: var(--text-muted);
-  font-size: 14px;
-  line-height: 1.6;
-}
 </style>

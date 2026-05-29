@@ -2,16 +2,16 @@
 
 > 最后更新：2026-05-29
 
-## 当前步骤：Step 3 — BoardManager 项目管理
+## 当前步骤：Step 4 — 画布 + 缩放平移
 **状态：✅ 已完成**
 
 ### 已完成
 - [x] Step 1：项目脚手架 + 暗色主题样式
 - [x] Step 2：MainLayout + Sidebar 骨架（~30min）
 - [x] Step 3：BoardManager — 项目管理（~45min）
+- [x] Step 4：CanvasBoard — 画布 + 缩放平移（~45min）
 
 ### 待完成
-- [ ] Step 4：CanvasBoard — 画布 + 缩放平移（~45min）
 - [ ] Step 5：ImageCard + 添加图片（~45min）
 - [ ] Step 6：TextCard + 文字编辑（~45min）
 - [ ] Step 7：TopToolbar — 浮动工具栏（~30min）
@@ -20,6 +20,7 @@
 - [ ] Step 10：润色 + README + 发布 GitHub（~45min）
 
 ### 最新更新
+- 2026-05-29：[Agent-C] Step 4 完成。新增 `useZoom`、`CanvasArea`、`CanvasBoard`，右侧工作区支持滚轮缩放与中键/右键拖拽平移。
 - 2026-05-29：[Agent-C] Step 3 完成。新增 `useBoard` 本地存储状态层和 `BoardManager` 面板，支持创建、切换、重命名、删除 Board，刷新后保留数据。
 - 2026-05-29：[Agent-C] Step 2 完成。新增 MainLayout + Sidebar 双栏骨架，App.vue 切到工作区占位界面。
 - 2026-05-28：[SOLO] 协作协议升级到 v2.0，自动化 git pull/push 流程，用户只需说"继续 MoodWeave"和"今天结束了"两句话。
