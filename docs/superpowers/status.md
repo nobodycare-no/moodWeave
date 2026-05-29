@@ -20,6 +20,7 @@
 - [ ] Step 10：润色 + README + 发布 GitHub（~45min）
 
 ### 最新更新
+- 2026-05-29：[Agent-C] 完善协作协议到 v2.1，新增交付范围判定、开工检查清单、审查风险说明与交接模板字段，避免将“最后改动是文档”误判为无需审查。
 - 2026-05-29：[Agent-C] Step 5 完成。新增 `useCanvas`、`AddImageBtn`、`ImageCard`，支持本地上传或 URL 添加图片卡片，图片卡片可选中并在缩放画布中拖拽移动。本次交付同时修改了 `CanvasArea`、`CanvasBoard`、`useZoom`、`App.vue` 以及进度文件本身。
 - 2026-05-29：[Agent-C] Step 4 完成。新增 `useZoom`、`CanvasArea`、`CanvasBoard`，右侧工作区支持滚轮缩放与中键/右键拖拽平移。
 - 2026-05-29：[Agent-C] Step 3 完成。新增 `useBoard` 本地存储状态层和 `BoardManager` 面板，支持创建、切换、重命名、删除 Board，刷新后保留数据。
@@ -29,4 +30,3 @@
 - 2026-05-28：[SOLO] 建立多 AI 协作协议体系。创建 `docs/superpowers/AGENTS.md`、`HANDOFF.md`、`REVIEW.md`。
 - 2026-05-28：[SOLO] Step 1 完成。Vue 3 + Vite + TS 脚手架 + 暗色霓虹主题 + Board/Card 类型定义 + App.vue 欢迎页。
 - 2026-05-28：[SOLO] 项目定稿：MoodWeave 灵感情绪板，布局B(双栏) + 暗色霓虹主题。设计文档和分步计划完成。
-
