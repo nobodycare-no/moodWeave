@@ -24,6 +24,9 @@ export function useCanvas() {
   const { currentBoard } = useBoard()
 
   const cards = computed(() => currentBoard.value?.cards ?? [])
+  const selectedCard = computed(
+    () => cards.value.find((card) => card.id === selectedCardId.value) ?? null,
+  )
   const editingCard = computed(
     () => cards.value.find((card) => card.id === editingCardId.value) ?? null,
   )
@@ -81,6 +84,14 @@ export function useCanvas() {
     touchBoard()
 
     return true
+  }
+
+  function removeSelectedCard(): boolean {
+    if (!selectedCardId.value) {
+      return false
+    }
+
+    return removeCard(selectedCardId.value)
   }
 
   function updateCardPosition(id: string, x: number, y: number): boolean {
@@ -166,9 +177,11 @@ export function useCanvas() {
     editingCard,
     editDraft,
     editingCardId,
+    selectedCard,
     selectedCardId,
     addCard,
     removeCard,
+    removeSelectedCard,
     beginTextEdit,
     updateEditDraft,
     saveTextEdit,

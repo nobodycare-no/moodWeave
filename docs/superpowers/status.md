@@ -2,7 +2,7 @@
 
 > 最后更新：2026-05-29
 
-## 当前步骤：Step 6 — TextCard + 文字编辑
+## 当前步骤：Step 7 — TopToolbar 浮动工具栏
 **状态：✅ 已完成**
 
 ### 已完成
@@ -12,14 +12,15 @@
 - [x] Step 4：CanvasBoard — 画布 + 缩放平移（~45min）
 - [x] Step 5：ImageCard + 添加图片（~45min）
 - [x] Step 6：TextCard + 文字编辑（~45min）
+- [x] Step 7：TopToolbar — 浮动工具栏（~30min）
 
 ### 待完成
-- [ ] Step 7：TopToolbar — 浮动工具栏（~30min）
 - [ ] Step 8：导出 PNG（~30min）
 - [ ] Step 9：AssetLibrary + 联动（~30min）
 - [ ] Step 10：润色 + README + 发布 GitHub（~45min）
 
 ### 最新更新
+- 2026-05-29：[Agent-C] Step 7 完成。新增 `TopToolbar` 和 `DeleteBtn`，将添加图片、添加文本、删除选中卡片整合为画布顶部浮动工具栏；扩展 `useCanvas` 的 `selectedCard` 与 `removeSelectedCard`，支持删除当前选中的图片或文本卡片。
 - 2026-05-29：[Agent-C] Step 6 完成。新增 `AddTextBtn`、`TextCard`、`EditModal`，扩展 `useCanvas` 的文本编辑状态；画布现在可添加文本卡片、拖拽移动、双击编辑并保存到当前 Board。
 - 2026-05-29：[Agent-C] 完成一次缺陷修复审查。修正 AddImage 弹层层级被画布遮挡的问题，调整画布顶部层级与弹层 z-index；修正 CanvasBoard 的卡片过滤和提示文案；补上切换 Board 时清理选中态，避免跨板残留。
 - 2026-05-29：[Agent-C] 完善协作协议到 v2.1，新增交付范围判定、开工检查清单、审查风险说明与交接模板字段，避免将“最后改动是文档”误判为无需审查。

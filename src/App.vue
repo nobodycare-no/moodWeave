@@ -22,7 +22,7 @@ const { currentBoard } = useBoard()
         <span class="status-dot" aria-hidden="true"></span>
         <span>{{ currentBoard?.name ?? 'Mood Board' }}</span>
         <span class="status-separator">/</span>
-        <span>Step 5 image cards</span>
+        <span>Step 7 toolbar</span>
       </div>
     </header>
 
