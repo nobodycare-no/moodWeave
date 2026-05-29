@@ -1,5 +1,6 @@
 import { computed, ref } from 'vue'
 import { useBoard } from './useBoard'
+import { resolveImageSource } from './useImageStore'
 
 const EXPORT_PADDING = 80
 const EMPTY_WIDTH = 1200
@@ -225,7 +226,8 @@ export function useExport() {
           context.fillRect(x, y, card.width, card.height)
 
           try {
-            const image = await loadImage(card.content)
+            const imageSource = await resolveImageSource(card.content)
+            const image = await loadImage(imageSource)
             const scale = Math.max(card.width / image.width, card.height / image.height)
             const drawWidth = image.width * scale
             const drawHeight = image.height * scale

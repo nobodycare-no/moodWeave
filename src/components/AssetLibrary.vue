@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import AssetImagePreview from './AssetImagePreview.vue'
 import { useAssets } from '../composables/useAssets'
 import { useCanvas } from '../composables/useCanvas'
 import type { Asset } from '../types'
@@ -7,7 +8,6 @@ import type { Asset } from '../types'
 const { addAssetFromCard, assets, removeAsset, storageError } = useAssets()
 const { addCard, selectedCard } = useCanvas()
 const statusMessage = ref('')
-const previewErrors = ref<Record<string, boolean>>({})
 
 const saveButtonLabel = computed(() => {
   if (!selectedCard.value) {
@@ -35,14 +35,6 @@ function insertAsset(asset: Asset) {
 function deleteAsset(asset: Asset) {
   removeAsset(asset.id)
   statusMessage.value = `${asset.name} removed.`
-  delete previewErrors.value[asset.id]
-}
-
-function markPreviewError(id: string) {
-  previewErrors.value = {
-    ...previewErrors.value,
-    [id]: true,
-  }
 }
 </script>
 
@@ -71,16 +63,11 @@ function markPreviewError(id: string) {
     <div v-if="assets.length" class="asset-list" role="list" aria-label="Saved assets">
       <article v-for="asset in assets" :key="asset.id" class="asset-item" role="listitem">
         <button class="asset-preview" type="button" @click="insertAsset(asset)">
-          <img
-            v-if="asset.type === 'image' && !previewErrors[asset.id]"
-            class="image-preview"
-            :src="asset.content"
+          <AssetImagePreview
+            v-if="asset.type === 'image'"
+            :source="asset.content"
             :alt="asset.name"
-            @error="markPreviewError(asset.id)"
           />
-          <div v-else-if="asset.type === 'image'" class="asset-fallback">
-            <span>IMG</span>
-          </div>
           <span v-else class="text-preview">{{ asset.content }}</span>
         </button>
 
@@ -230,27 +217,6 @@ function markPreviewError(id: string) {
 
 .asset-preview:hover {
   border-color: rgba(233, 69, 96, 0.35);
-}
-
-.asset-fallback {
-  display: grid;
-  place-items: center;
-  width: 100%;
-  height: 100%;
-  background:
-    linear-gradient(135deg, rgba(233, 69, 96, 0.14), rgba(83, 52, 131, 0.16)),
-    rgba(255, 255, 255, 0.03);
-  color: rgba(255, 255, 255, 0.72);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-}
-
-.image-preview {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
 }
 
 .text-preview {

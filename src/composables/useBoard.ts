@@ -1,5 +1,6 @@
 import { computed, ref, watch } from 'vue'
 import type { Board, Card, StorageData } from '../types'
+import { isInlineImageSource, storeInlineImageSource } from './useImageStore'
 
 const STORAGE_KEY = 'moodweave.boards.v1'
 
@@ -133,6 +134,29 @@ function persistStorage() {
   }
 }
 
+async function migrateInlineImages() {
+  let changed = false
+
+  for (const board of boards.value) {
+    for (const card of board.cards) {
+      if (card.type !== 'image' || !isInlineImageSource(card.content)) {
+        continue
+      }
+
+      try {
+        card.content = await storeInlineImageSource(card.content)
+        changed = true
+      } catch (error) {
+        console.warn('Inline board image could not be migrated to IndexedDB.', error)
+      }
+    }
+  }
+
+  if (changed) {
+    persistStorage()
+  }
+}
+
 function ensureDefaultBoard() {
   if (boards.value.length > 0) {
     return
@@ -161,6 +185,7 @@ function hydrateBoards() {
 
   hydrated = true
   persistStorage()
+  void migrateInlineImages()
 }
 
 function ensureInitialized() {

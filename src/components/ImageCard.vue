@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import type { Card } from '../types'
 import { useCanvas } from '../composables/useCanvas'
+import { useResolvedImageSource } from '../composables/useImageStore'
 import { useZoom } from '../composables/useZoom'
 
 const props = defineProps<{
@@ -13,6 +14,8 @@ const { selectCard, updateCardPosition } = useCanvas()
 const { scale } = useZoom()
 const isDragging = ref(false)
 const dragStart = ref({ clientX: 0, clientY: 0, x: 0, y: 0 })
+const imageSource = computed(() => props.card.content)
+const { loadError, resolvedSource } = useResolvedImageSource(imageSource)
 
 const cardStyle = computed(() => ({
   width: `${props.card.width}px`,
@@ -77,7 +80,16 @@ function endDrag(event: PointerEvent) {
     @pointercancel="endDrag"
     @click.stop
   >
-    <img class="image-preview" :src="card.content" alt="" draggable="false" />
+    <img
+      v-if="resolvedSource"
+      class="image-preview"
+      :src="resolvedSource"
+      alt=""
+      draggable="false"
+    />
+    <div v-else class="image-fallback">
+      <span>{{ loadError || 'Loading image' }}</span>
+    </div>
     <div class="image-overlay">
       <span>Image</span>
     </div>
@@ -113,6 +125,19 @@ function endDrag(event: PointerEvent) {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  pointer-events: none;
+}
+
+.image-fallback {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 18px;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: center;
   pointer-events: none;
 }
 

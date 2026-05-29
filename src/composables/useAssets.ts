@@ -1,5 +1,6 @@
 import { computed, ref, watch } from 'vue'
 import type { Asset, Card } from '../types'
+import { isInlineImageSource, storeInlineImageSource } from './useImageStore'
 
 const STORAGE_KEY = 'moodweave.assets.v1'
 
@@ -87,6 +88,27 @@ function persistStorage() {
   }
 }
 
+async function migrateInlineImages() {
+  let changed = false
+
+  for (const asset of assets.value) {
+    if (asset.type !== 'image' || !isInlineImageSource(asset.content)) {
+      continue
+    }
+
+    try {
+      asset.content = await storeInlineImageSource(asset.content)
+      changed = true
+    } catch (error) {
+      console.warn('Inline asset image could not be migrated to IndexedDB.', error)
+    }
+  }
+
+  if (changed) {
+    persistStorage()
+  }
+}
+
 function ensureInitialized() {
   if (initialized) {
     return
@@ -96,6 +118,7 @@ function ensureInitialized() {
   assets.value = loadStorage()
   hydrated = true
   persistStorage()
+  void migrateInlineImages()
   watch(assets, persistStorage, { deep: true })
 }
 

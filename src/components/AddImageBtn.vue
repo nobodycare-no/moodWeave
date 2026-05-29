@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, ref } from 'vue'
 import { useCanvas } from '../composables/useCanvas'
+import { saveImageBlob } from '../composables/useImageStore'
 
 const { addCard } = useCanvas()
 const buttonRef = ref<HTMLButtonElement | null>(null)
@@ -58,22 +59,6 @@ function openFilePicker() {
   fileInput.value?.click()
 }
 
-function readFileAsDataUrl(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.addEventListener('load', () => {
-      if (typeof reader.result === 'string') {
-        resolve(reader.result)
-        return
-      }
-
-      reject(new Error('Unsupported file result'))
-    })
-    reader.addEventListener('error', () => reject(reader.error ?? new Error('Unable to read file')))
-    reader.readAsDataURL(file)
-  })
-}
-
 function loadImage(source: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const image = new Image()
@@ -83,7 +68,24 @@ function loadImage(source: string): Promise<HTMLImageElement> {
   })
 }
 
-async function optimizeRasterImage(file: File): Promise<string> {
+function canvasToBlob(canvas: HTMLCanvasElement): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => {
+        if (!blob) {
+          reject(new Error('Unable to optimize image'))
+          return
+        }
+
+        resolve(blob)
+      },
+      'image/webp',
+      IMAGE_QUALITY,
+    )
+  })
+}
+
+async function optimizeRasterImage(file: File): Promise<Blob> {
   const source = URL.createObjectURL(file)
 
   try {
@@ -104,7 +106,7 @@ async function optimizeRasterImage(file: File): Promise<string> {
     }
 
     context.drawImage(image, 0, 0, outputWidth, outputHeight)
-    return canvas.toDataURL('image/webp', IMAGE_QUALITY)
+    return canvasToBlob(canvas)
   } finally {
     URL.revokeObjectURL(source)
   }
@@ -112,13 +114,13 @@ async function optimizeRasterImage(file: File): Promise<string> {
 
 async function readImageFile(file: File): Promise<string> {
   if (file.type === 'image/svg+xml') {
-    return readFileAsDataUrl(file)
+    return saveImageBlob(file)
   }
 
   try {
-    return await optimizeRasterImage(file)
+    return saveImageBlob(await optimizeRasterImage(file))
   } catch {
-    return readFileAsDataUrl(file)
+    return saveImageBlob(file)
   }
 }
 
