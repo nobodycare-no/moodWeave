@@ -3,6 +3,10 @@ import { useBoard } from './useBoard'
 import type { Card } from '../types'
 
 const selectedCardId = ref<string | null>(null)
+const editingCardId = ref<string | null>(null)
+const editDraft = ref('')
+
+const DEFAULT_TEXT_CONTENT = 'Double-click to edit text'
 
 function createId(prefix: string): string {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
@@ -20,6 +24,9 @@ export function useCanvas() {
   const { currentBoard } = useBoard()
 
   const cards = computed(() => currentBoard.value?.cards ?? [])
+  const editingCard = computed(
+    () => cards.value.find((card) => card.id === editingCardId.value) ?? null,
+  )
 
   function touchBoard() {
     if (currentBoard.value) {
@@ -33,6 +40,8 @@ export function useCanvas() {
     }
 
     const baseSize = type === 'image' ? { width: 320, height: 220 } : { width: 260, height: 160 }
+    const nextContent =
+      type === 'text' ? content.trim() || DEFAULT_TEXT_CONTENT : content
     const card: Card = {
       id: createId('card'),
       type,
@@ -40,7 +49,7 @@ export function useCanvas() {
       y: 140 + currentBoard.value.cards.length * 20,
       width: baseSize.width,
       height: baseSize.height,
-      content,
+      content: nextContent,
       zIndex: getNextZIndex(currentBoard.value.cards),
     }
 
@@ -64,6 +73,10 @@ export function useCanvas() {
     currentBoard.value.cards.splice(index, 1)
     if (selectedCardId.value === id) {
       selectedCardId.value = null
+    }
+    if (editingCardId.value === id) {
+      editingCardId.value = null
+      editDraft.value = ''
     }
     touchBoard()
 
@@ -110,11 +123,56 @@ export function useCanvas() {
     selectedCardId.value = null
   }
 
+  function beginTextEdit(id: string): boolean {
+    const card = cards.value.find((entry) => entry.id === id)
+    if (!card || card.type !== 'text') {
+      return false
+    }
+
+    selectedCardId.value = id
+    editingCardId.value = id
+    editDraft.value = card.content
+    return true
+  }
+
+  function updateEditDraft(value: string) {
+    editDraft.value = value
+  }
+
+  function saveTextEdit(): boolean {
+    if (!editingCard.value) {
+      return false
+    }
+
+    const nextContent = editDraft.value.trim()
+    if (!nextContent) {
+      return false
+    }
+
+    editingCard.value.content = nextContent
+    touchBoard()
+    editingCardId.value = null
+    editDraft.value = ''
+    return true
+  }
+
+  function cancelTextEdit() {
+    editingCardId.value = null
+    editDraft.value = ''
+  }
+
   return {
     cards,
+    editingCard,
+    editDraft,
+    editingCardId,
     selectedCardId,
     addCard,
     removeCard,
+    beginTextEdit,
+    updateEditDraft,
+    saveTextEdit,
+    cancelTextEdit,
     updateCardPosition,
     updateCardContent,
     selectCard,

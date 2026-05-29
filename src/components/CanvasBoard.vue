@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref } from 'vue'
 import ImageCard from './ImageCard.vue'
+import EditModal from './EditModal.vue'
+import TextCard from './TextCard.vue'
 import { useCanvas } from '../composables/useCanvas'
 import { useZoom } from '../composables/useZoom'
 
@@ -8,6 +10,7 @@ const { cards, deselectAll, selectedCardId } = useCanvas()
 const { handlePanEnd, handlePanMove, handlePanStart, handleWheel, transformStyle } = useZoom()
 const isDragging = ref(false)
 const imageCards = computed(() => cards.value.filter((card) => card.type === 'image'))
+const textCards = computed(() => cards.value.filter((card) => card.type === 'text'))
 
 function startPan(event: PointerEvent) {
   if (event.button === 0) {
@@ -91,7 +94,14 @@ onBeforeUnmount(() => {
           :card="card"
           :selected="card.id === selectedCardId"
         />
+        <TextCard
+          v-for="card in textCards"
+          :key="card.id"
+          :card="card"
+          :selected="card.id === selectedCardId"
+        />
       </div>
+      <EditModal />
     </div>
   </div>
 </template>

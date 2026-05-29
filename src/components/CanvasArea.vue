@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { computed, watch } from 'vue'
 import AddImageBtn from './AddImageBtn.vue'
+import AddTextBtn from './AddTextBtn.vue'
 import CanvasBoard from './CanvasBoard.vue'
+import EditModal from './EditModal.vue'
 import { useBoard } from '../composables/useBoard'
 import { useCanvas } from '../composables/useCanvas'
 import { useZoom } from '../composables/useZoom'
 
 const { currentBoard } = useBoard()
-const { cards, deselectAll } = useCanvas()
+const { cancelTextEdit, cards, deselectAll } = useCanvas()
 const { resetZoom, scale, zoomIn, zoomOut } = useZoom()
 
 const zoomPercent = computed(() => `${Math.round(scale.value * 100)}%`)
@@ -16,6 +18,7 @@ watch(
   () => currentBoard.value?.id,
   () => {
     deselectAll()
+    cancelTextEdit()
   },
 )
 </script>
@@ -34,6 +37,7 @@ watch(
 
       <div class="topbar-actions">
         <AddImageBtn />
+        <AddTextBtn />
 
         <div class="zoom-controls" aria-label="Canvas zoom controls">
           <button class="zoom-button" type="button" aria-label="Zoom out" title="Zoom out" @click="zoomOut()">
@@ -51,6 +55,7 @@ watch(
 
     <div class="board-shell">
       <CanvasBoard />
+      <EditModal />
     </div>
   </section>
 </template>
