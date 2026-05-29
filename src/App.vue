@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import MainLayout from './components/MainLayout.vue'
 import Sidebar from './components/Sidebar.vue'
+import { useBoard } from './composables/useBoard'
+
+const { currentBoard, boardCount } = useBoard()
 </script>
 
 <template>
@@ -16,7 +19,9 @@ import Sidebar from './components/Sidebar.vue'
 
       <div class="header-status">
         <span class="status-dot" aria-hidden="true"></span>
-        <span>Step 2 layout scaffold</span>
+        <span>{{ currentBoard?.name ?? 'Mood Board' }}</span>
+        <span class="status-separator">/</span>
+        <span>{{ boardCount }} boards</span>
       </div>
     </header>
 
@@ -122,6 +127,10 @@ import Sidebar from './components/Sidebar.vue'
   border-radius: 50%;
   background: var(--accent-primary);
   box-shadow: var(--shadow-glow);
+}
+
+.status-separator {
+  color: var(--text-muted);
 }
 
 .app-main {

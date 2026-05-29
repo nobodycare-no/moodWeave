@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import BoardManager from './BoardManager.vue'
+
 const navItems = [
   { label: 'Boards', icon: 'B', active: true },
   { label: 'Assets', icon: 'A', active: false },
@@ -9,6 +11,8 @@ const navItems = [
 <template>
   <nav class="sidebar" aria-label="Workspace tools">
     <div class="brand-mark" aria-label="MoodWeave">MW</div>
+
+    <BoardManager class="board-panel" />
 
     <div class="nav-group">
       <button
@@ -34,7 +38,6 @@ const navItems = [
 .sidebar {
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 18px;
   width: 100%;
   height: 100%;
@@ -57,11 +60,11 @@ const navItems = [
 
 .nav-group {
   display: flex;
-  flex: 1;
   flex-direction: column;
   align-items: center;
   gap: 10px;
   width: 100%;
+  margin-top: auto;
 }
 
 .nav-button,
@@ -106,5 +109,10 @@ const navItems = [
 .profile-button {
   margin-top: auto;
   color: var(--text-secondary);
+}
+
+.board-panel {
+  flex: 1;
+  min-height: 0;
 }
 </style>
