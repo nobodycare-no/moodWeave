@@ -22,9 +22,13 @@ import ExportBtn from './ExportBtn.vue'
   top: 14px;
   left: 50%;
   z-index: 70;
-  display: inline-flex;
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
   gap: 8px;
+  width: max-content;
+  max-width: calc(100% - 24px);
   padding: 8px;
   border: 1px solid var(--border-color);
   border-radius: 8px;
@@ -38,5 +42,18 @@ import ExportBtn from './ExportBtn.vue'
   width: 1px;
   height: 24px;
   background: var(--border-color);
+  flex: 0 0 auto;
+}
+
+@media (max-width: 760px) {
+  .top-toolbar {
+    top: 10px;
+    gap: 6px;
+    padding: 6px;
+  }
+
+  .divider {
+    display: none;
+  }
 }
 </style>

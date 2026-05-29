@@ -27,12 +27,14 @@ function updatePanelPosition() {
 
   const viewportPadding = 16
   const buttonRect = buttonRef.value.getBoundingClientRect()
+  const toolbarRect = buttonRef.value.closest('.top-toolbar')?.getBoundingClientRect()
   const width = Math.max(180, Math.min(300, window.innerWidth - viewportPadding * 2))
   const left = clamp(buttonRect.left, viewportPadding, window.innerWidth - width - viewportPadding)
+  const top = Math.max(buttonRect.bottom, toolbarRect?.bottom ?? 0) + 10
 
   panelPosition.value = {
     left,
-    top: buttonRect.bottom + 10,
+    top,
     width,
   }
 }
@@ -138,6 +140,7 @@ onBeforeUnmount(() => {
           ref="fileInput"
           class="file-input"
           type="file"
+          name="imageFile"
           accept="image/*"
           aria-label="Upload image"
           @change="handleFileChange"
@@ -148,6 +151,7 @@ onBeforeUnmount(() => {
             v-model="imageUrl"
             class="url-input"
             type="url"
+            name="imageUrl"
             placeholder="https://..."
             aria-label="Image URL"
           />

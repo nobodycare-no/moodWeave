@@ -67,6 +67,8 @@ function removeBoard(id: string) {
     <form class="create-board" @submit.prevent="submitCreateBoard">
       <input
         v-model="draftName"
+        id="new-board-name"
+        name="newBoardName"
         type="text"
         class="board-input"
         placeholder="New board name"
@@ -93,6 +95,8 @@ function removeBoard(id: string) {
         <div v-if="board.id === renameDraftId" class="rename-row">
           <input
             v-model="renameDraftValue"
+            :id="`rename-board-${board.id}`"
+            name="renameBoard"
             class="rename-input"
             type="text"
             aria-label="Rename board"
