@@ -113,3 +113,10 @@
 - Root cause: browser localStorage and IndexedDB are scoped by origin, so `localhost:5173` and `127.0.0.1:5173` show different MoodWeave data.
 - Changed the one-click startup origin back to `localhost:5173` to keep startup consistent with the original README and Vite default.
 - Updated README with a persistence note and recovery command for users who previously saved data under `127.0.0.1:5173`.
+
+## 2026-05-30 Agent-C codegraph setup fix
+
+- Fixed the CodeGraph MCP launch path by installing the global `@colbymchenry/codegraph` CLI and re-registering Codex MCP to start via `cmd /c codegraph serve --mcp`.
+- Verified that `codegraph` is now available directly on PATH, so `codegraph init -i`, `codegraph status`, `codegraph query`, and `codegraph serve --mcp` all work from the project shell.
+- Added `.codegraph/` to the repository `.gitignore` so the local index cache stays out of Git.
+- Verification: `codegraph init -i` returned the expected already-initialized message for `D:\projects\moodWeave`; `codegraph status` reported the index as up to date; `codegraph query useCanvas` returned project symbols.
