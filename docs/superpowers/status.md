@@ -18,9 +18,26 @@
 - [x] Step 10：润色 + README + 发布 GitHub（~45min）
 
 ### 待完成
-- 暂无
+- 下一轮建议进入 Iteration 2：创作工作流可靠化。详见 `docs/superpowers/specs/2026-05-30-next-iteration-plan.md`。
+
+## 下一轮迭代建议：Iteration 2 — 创作工作流可靠化
+
+**方向判断**：当前项目已经完成可演示 MVP，下一轮不建议继续零散堆新按钮，而应优先补齐“真实长期使用”的信任链路：数据可迁移、误操作可撤销、素材可管理、AI 结果可追溯、导入导出可验证。
+
+### 推荐步骤
+
+1. 数据备份与恢复：导出/导入 Boards、Assets、Connections 和 IndexedDB 图片引用。
+2. 存储模型版本化：引入 `schemaVersion` 和统一 migration 入口。
+3. Undo / Redo：覆盖添加、删除、移动、编辑文本、连接和连接标签。
+4. 画布编辑效率：复制、键盘删除、Esc 取消、置顶/置底、卡片尺寸调整、视口中心插入。
+5. 素材库管理：重命名、搜索/筛选、删除确认、基础标签和来源信息。
+6. AI 生成可追溯：记录 prompt/model/size/quality/source，并支持基于原记录再生成。
+7. 导出与导入体验：PNG 倍率/背景/范围选项，备份导入后显示摘要。
+8. 回归验证基线：固定 smoke test，加上 `npm run build` 作为每次交付底线。
 
 ### 最新更新
+- 2026-05-30：[Agent-C] 补做 codegraph 架构上下文检查，确认下一轮方案的优先级与当前代码边界一致：关键入口集中在 `StorageData`、`useBoard` / `useAssets` 本地存储、`useImageStore` 图片引用解析和 `useExport` 导出链路，因此 Iteration 2 仍建议先做备份恢复与存储版本化。
+- 2026-05-30：[Agent-C] 增加下一轮迭代方案，建议 Iteration 2 聚焦创作工作流可靠化：备份恢复、存储版本化、Undo/Redo、画布编辑效率、素材库管理、AI 生成可追溯、导出导入体验和回归验证。详细方案见 `docs/superpowers/specs/2026-05-30-next-iteration-plan.md`，并在 `HANDOFF.md` 中补充给 SOLO 的接手说明。
 - 2026-05-30：[Agent-C] 新增文本与图片卡片之间的逻辑连线。Board 数据新增 `connections`，旧数据自动兼容为空数组；工具栏新增 `Connect` 按钮，选中卡片后进入 Pick target 模式，再点击另一种类型卡片即可创建连线；画布新增 SVG 连线层，卡片拖动时连线随坐标更新；删除卡片会同步清理相关连线；PNG 导出已绘制连线。Chrome DevTools MCP 已验证连接流程、持久化和导出 PNG。
 - 2026-05-29：[Agent-C] 今日收工。完成存储架构迁移与回归验证，当前工作区已清理；下一次继续时可直接从 IndexedDB 图片存储方案基础上推进新功能或进一步优化兼容迁移。
 - 2026-05-29：[Agent-C] 完成下一轮存储架构优化。新增 `useImageStore`，将本地上传图片保存到 IndexedDB，Board / Asset 中只保留 `mw-image://...` 轻量引用；`ImageCard`、`AssetLibrary` 和 PNG 导出均已接入引用解析；旧版 `data:image/...` 图片会在加载时后台迁移到 IndexedDB。Chrome DevTools MCP 已验证 IndexedDB 图片可正常渲染，localStorage 只保存短引用，PNG 导出可解析 IndexedDB 图片。
