@@ -1,6 +1,11 @@
 import { computed, ref } from 'vue'
 import { useBoard } from './useBoard'
 import { resolveImageSource } from './useImageStore'
+import {
+  buildConnectionGeometry,
+  getConnectionTheme,
+  type ConnectionTheme,
+} from '../utils/connectionStyles'
 
 const EXPORT_PADDING = 80
 const EMPTY_WIDTH = 1200
@@ -55,22 +60,55 @@ function drawConnection(
   context: CanvasRenderingContext2D,
   from: { x: number; y: number },
   to: { x: number; y: number },
+  theme: ConnectionTheme,
 ) {
-  const distance = Math.max(80, Math.abs(to.x - from.x) * 0.38)
+  const geometry = buildConnectionGeometry(from, to)
+  const gradient = context.createLinearGradient(from.x, from.y, to.x, to.y)
+  gradient.addColorStop(0, theme.lineStart)
+  gradient.addColorStop(1, theme.lineEnd)
 
   context.save()
-  context.strokeStyle = 'rgba(233, 69, 96, 0.78)'
-  context.fillStyle = 'rgba(233, 69, 96, 0.88)'
-  context.lineWidth = 3
   context.lineCap = 'round'
+
   context.beginPath()
   context.moveTo(from.x, from.y)
-  context.bezierCurveTo(from.x + distance, from.y, to.x - distance, to.y, to.x, to.y)
+  context.bezierCurveTo(
+    from.x + geometry.controlDirection * geometry.controlOffset,
+    from.y + geometry.controlBend,
+    to.x - geometry.controlDirection * geometry.controlOffset,
+    to.y - geometry.controlBend,
+    to.x,
+    to.y,
+  )
+  context.strokeStyle = theme.shadow
+  context.lineWidth = 8
   context.stroke()
 
-  const angle = Math.atan2(to.y - from.y, to.x - from.x)
-  const arrowLength = 12
-  const arrowWidth = 7
+  context.beginPath()
+  context.moveTo(from.x, from.y)
+  context.bezierCurveTo(
+    from.x + geometry.controlDirection * geometry.controlOffset,
+    from.y + geometry.controlBend,
+    to.x - geometry.controlDirection * geometry.controlOffset,
+    to.y - geometry.controlBend,
+    to.x,
+    to.y,
+  )
+  context.strokeStyle = gradient
+  context.lineWidth = 4
+  context.stroke()
+
+  context.beginPath()
+  context.arc(from.x, from.y, 5, 0, Math.PI * 2)
+  context.fillStyle = '#ffffff'
+  context.fill()
+  context.strokeStyle = theme.startFill
+  context.lineWidth = 2
+  context.stroke()
+
+  const angle = Math.atan2(geometry.controlBend, geometry.controlDirection * geometry.controlOffset)
+  const arrowLength = 18
+  const arrowWidth = 10
   context.beginPath()
   context.moveTo(to.x, to.y)
   context.lineTo(
@@ -82,11 +120,18 @@ function drawConnection(
     to.y - arrowLength * Math.sin(angle) + arrowWidth * Math.cos(angle),
   )
   context.closePath()
+  context.fillStyle = theme.arrowFill
   context.fill()
   context.restore()
 }
 
-function drawConnectionLabel(context: CanvasRenderingContext2D, label: string, x: number, y: number) {
+function drawConnectionLabel(
+  context: CanvasRenderingContext2D,
+  label: string,
+  x: number,
+  y: number,
+  theme: ConnectionTheme,
+) {
   const trimmed = label.trim()
   if (!trimmed) {
     return
@@ -109,10 +154,10 @@ function drawConnectionLabel(context: CanvasRenderingContext2D, label: string, x
   roundedRect(context, labelX, labelY, measuredWidth, labelHeight, 8)
   context.fillStyle = 'rgba(22, 33, 62, 0.94)'
   context.fill()
-  context.strokeStyle = 'rgba(255, 207, 112, 0.44)'
+  context.strokeStyle = theme.labelBorder
   context.lineWidth = 1
   context.stroke()
-  context.fillStyle = '#ffffff'
+  context.fillStyle = theme.labelText
   lines.forEach((line, index) => {
     context.fillText(line, labelX + 10, labelY + 5 + index * 18)
   })
@@ -299,12 +344,14 @@ export function useExport() {
           y: toCard.y - originY + toCard.height / 2,
         }
 
-        drawConnection(context, from, to)
+        const theme = getConnectionTheme(fromCard.type, toCard.type)
+        drawConnection(context, from, to, theme)
         drawConnectionLabel(
           context,
           connection.label,
           (from.x + to.x) / 2,
           (from.y + to.y) / 2,
+          theme,
         )
       }
 

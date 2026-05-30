@@ -57,3 +57,10 @@
 - Rechecked PackyAPI GPT-Image-2 docs at `https://docs.packyapi.com/docs/paint/GPTImage.html`.
 - Updated image generation request config to match the Images API guidance: `/v1/images/generations`, Sora-token bearer auth, `n: 1`, `quality`, `response_format`, `output_format`, `background`, and `moderation`.
 - Extended `.env.example` and README with PackyAPI-supported image parameters. MoodWeave keeps `response_format=b64_json` by default because it saves generated images into IndexedDB; users can switch to `url` if they prefer Packy download links.
+
+## 2026-05-30 Agent-C canvas pan and connection style update
+
+- Made the blank canvas directly draggable with left mouse/pointer drag while keeping card dragging behavior unchanged.
+- Reworked connection visuals with type-aware color themes, a glow/shadow track, a crisp gradient line, source dots, and larger explicit target arrows so direction is easier to read.
+- Synced the same connection direction styling into PNG export.
+- Verification: `npm run build` passed; Chrome DevTools MCP verified canvas-stage transform changes after blank-canvas drag, connection SVG markers render, PNG export click works, and console has no runtime errors.

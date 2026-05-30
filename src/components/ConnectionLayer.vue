@@ -2,6 +2,7 @@
 import { computed, nextTick, ref } from 'vue'
 import type { Card, Connection } from '../types'
 import { useCanvas } from '../composables/useCanvas'
+import { buildConnectionGeometry, getConnectionTheme } from '../utils/connectionStyles'
 
 const props = defineProps<{
   cards: Card[]
@@ -12,6 +13,21 @@ const { updateConnectionLabel } = useCanvas()
 const editingConnectionId = ref<string | null>(null)
 const labelDraft = ref('')
 const activeInput = ref<HTMLInputElement | null>(null)
+
+function buildArrowPoints(to: { x: number; y: number }, angle: number): string {
+  const arrowLength = 18
+  const arrowWidth = 10
+  const left = {
+    x: to.x - arrowLength * Math.cos(angle) + arrowWidth * Math.sin(angle),
+    y: to.y - arrowLength * Math.sin(angle) - arrowWidth * Math.cos(angle),
+  }
+  const right = {
+    x: to.x - arrowLength * Math.cos(angle) - arrowWidth * Math.sin(angle),
+    y: to.y - arrowLength * Math.sin(angle) + arrowWidth * Math.cos(angle),
+  }
+
+  return `${to.x},${to.y} ${left.x},${left.y} ${right.x},${right.y}`
+}
 
 const connectionLines = computed(() => {
   const cardMap = new Map(props.cards.map((card) => [card.id, card]))
@@ -32,27 +48,51 @@ const connectionLines = computed(() => {
         x: toCard.x + toCard.width / 2,
         y: toCard.y + toCard.height / 2,
       }
-      const distance = Math.max(80, Math.abs(to.x - from.x) * 0.38)
-      const path = `M ${from.x} ${from.y} C ${from.x + distance} ${from.y}, ${to.x - distance} ${to.y}, ${to.x} ${to.y}`
+      const geometry = buildConnectionGeometry(from, to)
+      const theme = getConnectionTheme(fromCard.type, toCard.type)
+      const arrowAngle = Math.atan2(
+        geometry.controlBend,
+        geometry.controlDirection * geometry.controlOffset,
+      )
 
       return {
+        from,
         id: connection.id,
+        arrowFill: theme.arrowFill,
+        arrowPoints: buildArrowPoints(to, arrowAngle),
+        direction: theme.direction,
         label: connection.label,
-        labelX: (from.x + to.x) / 2,
-        labelY: (from.y + to.y) / 2,
-        path,
+        labelBorder: theme.labelBorder,
+        labelText: theme.labelText,
+        labelX: geometry.labelX,
+        labelY: geometry.labelY,
+        lineEnd: theme.lineEnd,
+        lineStart: theme.lineStart,
+        path: geometry.path,
+        shadow: theme.shadow,
+        startFill: theme.startFill,
         to,
       }
     })
     .filter(
-      (
+        (
         line,
       ): line is {
+        from: { x: number; y: number }
+        arrowFill: string
+        arrowPoints: string
+        direction: string
         id: string
         label: string
+        labelBorder: string
+        labelText: string
         labelX: number
         labelY: number
+        lineEnd: string
+        lineStart: string
         path: string
+        shadow: string
+        startFill: string
         to: { x: number; y: number }
       } => line !== null,
     )
@@ -90,25 +130,53 @@ function cancelLabelEdit() {
   <div class="connection-layer">
     <svg class="connection-svg" aria-hidden="true">
       <defs>
-        <marker
-          id="connection-arrow"
-          markerHeight="8"
-          markerWidth="8"
-          orient="auto"
-          refX="7"
-          refY="4"
-          viewBox="0 0 8 8"
+        <linearGradient
+          v-for="line in connectionLines"
+          :id="`connection-gradient-${line.id}`"
+          :key="`${line.id}-gradient`"
+          gradientUnits="userSpaceOnUse"
+          :x1="line.from.x"
+          :y1="line.from.y"
+          :x2="line.to.x"
+          :y2="line.to.y"
         >
-          <path class="connection-arrow" d="M 0 0 L 8 4 L 0 8 z" />
-        </marker>
+          <stop offset="0%" :stop-color="line.lineStart" />
+          <stop offset="100%" :stop-color="line.lineEnd" />
+        </linearGradient>
       </defs>
+
+      <path
+        v-for="line in connectionLines"
+        :key="`${line.id}-shadow`"
+        class="connection-line-shadow"
+        :d="line.path"
+        :stroke="line.shadow"
+      />
 
       <path
         v-for="line in connectionLines"
         :key="line.id"
         class="connection-line"
         :d="line.path"
-        marker-end="url(#connection-arrow)"
+        :stroke="`url(#connection-gradient-${line.id})`"
+      />
+
+      <circle
+        v-for="line in connectionLines"
+        :key="`${line.id}-start`"
+        class="connection-start-dot"
+        :cx="line.from.x"
+        :cy="line.from.y"
+        r="5"
+        :stroke="line.startFill"
+      />
+
+      <polygon
+        v-for="line in connectionLines"
+        :key="`${line.id}-arrow`"
+        class="connection-arrow"
+        :points="line.arrowPoints"
+        :fill="line.arrowFill"
       />
     </svg>
 
@@ -118,7 +186,11 @@ function cancelLabelEdit() {
         :key="`${line.id}-label`"
         class="connection-label"
         :class="{ empty: !line.label }"
-        :style="{ transform: `translate(${line.labelX}px, ${line.labelY}px) translate(-50%, -50%)` }"
+        :style="{
+          borderColor: line.labelBorder,
+          color: line.labelText,
+          transform: `translate(${line.labelX}px, ${line.labelY}px) translate(-50%, -50%)`,
+        }"
         @submit.prevent="saveLabelEdit"
         @pointerdown.stop
         @click.stop
@@ -139,6 +211,7 @@ function cancelLabelEdit() {
           v-else
           class="connection-label-button"
           type="button"
+          :style="{ color: line.labelText }"
           title="Edit connection label"
           @click="beginLabelEdit(line.id, line.label)"
         >
@@ -173,16 +246,28 @@ function cancelLabelEdit() {
   z-index: 0;
 }
 
-.connection-line {
+.connection-line,
+.connection-line-shadow {
   fill: none;
-  stroke: rgba(233, 69, 96, 0.72);
   stroke-linecap: round;
-  stroke-width: 2.5;
-  filter: drop-shadow(0 0 8px rgba(233, 69, 96, 0.26));
+}
+
+.connection-line-shadow {
+  opacity: 0.86;
+  stroke-width: 9;
+}
+
+.connection-line {
+  stroke-width: 4;
+}
+
+.connection-start-dot {
+  fill: rgba(255, 255, 255, 0.92);
+  stroke-width: 2;
 }
 
 .connection-arrow {
-  fill: rgba(233, 69, 96, 0.82);
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.16));
 }
 
 .connection-labels {
@@ -210,7 +295,6 @@ function cancelLabelEdit() {
   border-radius: 8px;
   background: rgba(22, 33, 62, 0.94);
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.36);
-  color: var(--text-primary);
   font: inherit;
   font-size: 12px;
   font-weight: 700;

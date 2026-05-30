@@ -14,20 +14,25 @@ const imageCards = computed(() => cards.value.filter((card) => card.type === 'im
 const textCards = computed(() => cards.value.filter((card) => card.type === 'text'))
 
 function startPan(event: PointerEvent) {
-  if (event.button === 0) {
-    deselectAll()
-  }
-
-  if (event.button !== 1 && event.button !== 2) {
+  if (event.button !== 0 && event.button !== 1 && event.button !== 2) {
     return
   }
 
   event.preventDefault()
+
+  if (event.button === 0) {
+    deselectAll()
+  }
+
   isDragging.value = true
   handlePanStart(event)
 
   if (event.currentTarget instanceof HTMLElement) {
-    event.currentTarget.setPointerCapture(event.pointerId)
+    try {
+      event.currentTarget.setPointerCapture(event.pointerId)
+    } catch {
+      return
+    }
   }
 }
 
@@ -47,14 +52,26 @@ function endPan(event: PointerEvent) {
   isDragging.value = false
   handlePanEnd()
 
-  if (event.currentTarget instanceof HTMLElement && event.currentTarget.hasPointerCapture(event.pointerId)) {
-    event.currentTarget.releasePointerCapture(event.pointerId)
+  if (event.currentTarget instanceof HTMLElement) {
+    try {
+      if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+        event.currentTarget.releasePointerCapture(event.pointerId)
+      }
+    } catch {
+      return
+    }
   }
 }
 
 function cancelPan(event: PointerEvent) {
-  if (event.currentTarget instanceof HTMLElement && event.currentTarget.hasPointerCapture(event.pointerId)) {
-    event.currentTarget.releasePointerCapture(event.pointerId)
+  if (event.currentTarget instanceof HTMLElement) {
+    try {
+      if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+        event.currentTarget.releasePointerCapture(event.pointerId)
+      }
+    } catch {
+      return
+    }
   }
 
   isDragging.value = false
@@ -112,6 +129,7 @@ onBeforeUnmount(() => {
   width: 100%;
   height: 100%;
   min-height: 0;
+  cursor: grab;
   outline: none;
   touch-action: none;
 }
