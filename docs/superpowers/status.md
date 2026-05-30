@@ -69,3 +69,10 @@
 
 - Updated Add image and AI image popovers to close when focus or pointer interaction moves outside the button/panel instead of requiring a second click on the same toolbar button.
 - Verification: `npm run build` passed; Chrome DevTools MCP verified outside-click dismissal, focus-out dismissal, and no runtime console errors.
+
+## 2026-05-30 Agent-C connection refinement update
+
+- Simplified connection styling to a thinner, clearer diagram style: 2.25px main line, subtle 4.75px backing stroke, smaller source dots, and smaller bordered target arrows.
+- Moved connection anchors from card centers to card-edge points with a small outside gap so source dots and target arrows are not hidden underneath image/text cards.
+- Synced the same edge-anchor and lighter-line logic into PNG export.
+- Verification: `npm run build` passed; Chrome DevTools MCP verified arrow/dot bounding boxes do not overlap card bounds, PNG export click works, and console has no runtime errors.

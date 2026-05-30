@@ -2,7 +2,11 @@
 import { computed, nextTick, ref } from 'vue'
 import type { Card, Connection } from '../types'
 import { useCanvas } from '../composables/useCanvas'
-import { buildConnectionGeometry, getConnectionTheme } from '../utils/connectionStyles'
+import {
+  buildConnectionGeometry,
+  getConnectionAnchors,
+  getConnectionTheme,
+} from '../utils/connectionStyles'
 
 const props = defineProps<{
   cards: Card[]
@@ -15,8 +19,8 @@ const labelDraft = ref('')
 const activeInput = ref<HTMLInputElement | null>(null)
 
 function buildArrowPoints(to: { x: number; y: number }, angle: number): string {
-  const arrowLength = 18
-  const arrowWidth = 10
+  const arrowLength = 13
+  const arrowWidth = 6.5
   const left = {
     x: to.x - arrowLength * Math.cos(angle) + arrowWidth * Math.sin(angle),
     y: to.y - arrowLength * Math.sin(angle) - arrowWidth * Math.cos(angle),
@@ -40,26 +44,15 @@ const connectionLines = computed(() => {
         return null
       }
 
-      const from = {
-        x: fromCard.x + fromCard.width / 2,
-        y: fromCard.y + fromCard.height / 2,
-      }
-      const to = {
-        x: toCard.x + toCard.width / 2,
-        y: toCard.y + toCard.height / 2,
-      }
+      const { from, to } = getConnectionAnchors(fromCard, toCard)
       const geometry = buildConnectionGeometry(from, to)
       const theme = getConnectionTheme(fromCard.type, toCard.type)
-      const arrowAngle = Math.atan2(
-        geometry.controlBend,
-        geometry.controlDirection * geometry.controlOffset,
-      )
 
       return {
         from,
         id: connection.id,
         arrowFill: theme.arrowFill,
-        arrowPoints: buildArrowPoints(to, arrowAngle),
+        arrowPoints: buildArrowPoints(to, geometry.endAngle),
         direction: theme.direction,
         label: connection.label,
         labelBorder: theme.labelBorder,
@@ -167,7 +160,7 @@ function cancelLabelEdit() {
         class="connection-start-dot"
         :cx="line.from.x"
         :cy="line.from.y"
-        r="5"
+        r="3.5"
         :stroke="line.startFill"
       />
 
@@ -253,21 +246,23 @@ function cancelLabelEdit() {
 }
 
 .connection-line-shadow {
-  opacity: 0.86;
-  stroke-width: 9;
+  opacity: 0.62;
+  stroke-width: 4.75;
 }
 
 .connection-line {
-  stroke-width: 4;
+  stroke-width: 2.25;
 }
 
 .connection-start-dot {
-  fill: rgba(255, 255, 255, 0.92);
-  stroke-width: 2;
+  fill: rgba(255, 255, 255, 0.94);
+  stroke-width: 1.6;
 }
 
 .connection-arrow {
-  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.16));
+  stroke: rgba(255, 255, 255, 0.24);
+  stroke-linejoin: round;
+  stroke-width: 0.8;
 }
 
 .connection-labels {

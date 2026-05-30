@@ -3,6 +3,7 @@ import { useBoard } from './useBoard'
 import { resolveImageSource } from './useImageStore'
 import {
   buildConnectionGeometry,
+  getConnectionAnchors,
   getConnectionTheme,
   type ConnectionTheme,
 } from '../utils/connectionStyles'
@@ -81,7 +82,7 @@ function drawConnection(
     to.y,
   )
   context.strokeStyle = theme.shadow
-  context.lineWidth = 8
+  context.lineWidth = 4.75
   context.stroke()
 
   context.beginPath()
@@ -95,20 +96,20 @@ function drawConnection(
     to.y,
   )
   context.strokeStyle = gradient
-  context.lineWidth = 4
+  context.lineWidth = 2.25
   context.stroke()
 
   context.beginPath()
-  context.arc(from.x, from.y, 5, 0, Math.PI * 2)
+  context.arc(from.x, from.y, 3.5, 0, Math.PI * 2)
   context.fillStyle = '#ffffff'
   context.fill()
   context.strokeStyle = theme.startFill
-  context.lineWidth = 2
+  context.lineWidth = 1.6
   context.stroke()
 
-  const angle = Math.atan2(geometry.controlBend, geometry.controlDirection * geometry.controlOffset)
-  const arrowLength = 18
-  const arrowWidth = 10
+  const angle = geometry.endAngle
+  const arrowLength = 13
+  const arrowWidth = 6.5
   context.beginPath()
   context.moveTo(to.x, to.y)
   context.lineTo(
@@ -122,6 +123,9 @@ function drawConnection(
   context.closePath()
   context.fillStyle = theme.arrowFill
   context.fill()
+  context.strokeStyle = 'rgba(255, 255, 255, 0.24)'
+  context.lineWidth = 0.8
+  context.stroke()
   context.restore()
 }
 
@@ -335,14 +339,9 @@ export function useExport() {
           continue
         }
 
-        const from = {
-          x: fromCard.x - originX + fromCard.width / 2,
-          y: fromCard.y - originY + fromCard.height / 2,
-        }
-        const to = {
-          x: toCard.x - originX + toCard.width / 2,
-          y: toCard.y - originY + toCard.height / 2,
-        }
+        const exportFromCard = { ...fromCard, x: fromCard.x - originX, y: fromCard.y - originY }
+        const exportToCard = { ...toCard, x: toCard.x - originX, y: toCard.y - originY }
+        const { from, to } = getConnectionAnchors(exportFromCard, exportToCard)
 
         const theme = getConnectionTheme(fromCard.type, toCard.type)
         drawConnection(context, from, to, theme)
