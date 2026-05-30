@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref } from 'vue'
+import ConnectionLayer from './ConnectionLayer.vue'
 import ImageCard from './ImageCard.vue'
 import EditModal from './EditModal.vue'
 import TextCard from './TextCard.vue'
 import { useCanvas } from '../composables/useCanvas'
 import { useZoom } from '../composables/useZoom'
 
-const { cards, deselectAll, selectedCardId } = useCanvas()
+const { cards, connections, connectionSourceId, deselectAll, selectedCardId } = useCanvas()
 const { handlePanEnd, handlePanMove, handlePanStart, handleWheel, transformStyle } = useZoom()
 const isDragging = ref(false)
 const imageCards = computed(() => cards.value.filter((card) => card.type === 'image'))
@@ -84,16 +85,19 @@ onBeforeUnmount(() => {
           <p class="stage-label">Canvas</p>
           <h2>Mood board canvas</h2>
         </div>
+        <ConnectionLayer :cards="cards" :connections="connections" />
         <ImageCard
           v-for="card in imageCards"
           :key="card.id"
           :card="card"
+          :connection-source="card.id === connectionSourceId"
           :selected="card.id === selectedCardId"
         />
         <TextCard
           v-for="card in textCards"
           :key="card.id"
           :card="card"
+          :connection-source="card.id === connectionSourceId"
           :selected="card.id === selectedCardId"
         />
       </div>

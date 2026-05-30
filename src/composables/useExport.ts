@@ -51,6 +51,41 @@ function drawGrid(context: CanvasRenderingContext2D, width: number, height: numb
   context.restore()
 }
 
+function drawConnection(
+  context: CanvasRenderingContext2D,
+  from: { x: number; y: number },
+  to: { x: number; y: number },
+) {
+  const distance = Math.max(80, Math.abs(to.x - from.x) * 0.38)
+
+  context.save()
+  context.strokeStyle = 'rgba(233, 69, 96, 0.78)'
+  context.fillStyle = 'rgba(233, 69, 96, 0.88)'
+  context.lineWidth = 3
+  context.lineCap = 'round'
+  context.beginPath()
+  context.moveTo(from.x, from.y)
+  context.bezierCurveTo(from.x + distance, from.y, to.x - distance, to.y, to.x, to.y)
+  context.stroke()
+
+  const angle = Math.atan2(to.y - from.y, to.x - from.x)
+  const arrowLength = 12
+  const arrowWidth = 7
+  context.beginPath()
+  context.moveTo(to.x, to.y)
+  context.lineTo(
+    to.x - arrowLength * Math.cos(angle) + arrowWidth * Math.sin(angle),
+    to.y - arrowLength * Math.sin(angle) - arrowWidth * Math.cos(angle),
+  )
+  context.lineTo(
+    to.x - arrowLength * Math.cos(angle) - arrowWidth * Math.sin(angle),
+    to.y - arrowLength * Math.sin(angle) + arrowWidth * Math.cos(angle),
+  )
+  context.closePath()
+  context.fill()
+  context.restore()
+}
+
 function wrapText(context: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {
   const paragraphs = text.split('\n')
   const lines: string[] = []
@@ -213,6 +248,27 @@ export function useExport() {
       context.fillStyle = '#1a1a2e'
       context.fillRect(0, 0, width, height)
       drawGrid(context, width, height)
+
+      const cardMap = new Map(cards.map((card) => [card.id, card]))
+      for (const connection of currentBoard.value.connections) {
+        const fromCard = cardMap.get(connection.fromCardId)
+        const toCard = cardMap.get(connection.toCardId)
+        if (!fromCard || !toCard) {
+          continue
+        }
+
+        drawConnection(
+          context,
+          {
+            x: fromCard.x - originX + fromCard.width / 2,
+            y: fromCard.y - originY + fromCard.height / 2,
+          },
+          {
+            x: toCard.x - originX + toCard.width / 2,
+            y: toCard.y - originY + toCard.height / 2,
+          },
+        )
+      }
 
       for (const card of [...cards].sort((a, b) => a.zIndex - b.zIndex)) {
         const x = card.x - originX

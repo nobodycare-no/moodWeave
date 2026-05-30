@@ -1,6 +1,6 @@
 # MoodWeave 开发进度
 
-> 最后更新：2026-05-29
+> 最后更新：2026-05-30
 
 ## 当前步骤：Step 10 — 润色 + README + 发布 GitHub
 **状态：✅ 已完成**
@@ -21,6 +21,7 @@
 - 暂无
 
 ### 最新更新
+- 2026-05-30：[Agent-C] 新增文本与图片卡片之间的逻辑连线。Board 数据新增 `connections`，旧数据自动兼容为空数组；工具栏新增 `Connect` 按钮，选中卡片后进入 Pick target 模式，再点击另一种类型卡片即可创建连线；画布新增 SVG 连线层，卡片拖动时连线随坐标更新；删除卡片会同步清理相关连线；PNG 导出已绘制连线。Chrome DevTools MCP 已验证连接流程、持久化和导出 PNG。
 - 2026-05-29：[Agent-C] 今日收工。完成存储架构迁移与回归验证，当前工作区已清理；下一次继续时可直接从 IndexedDB 图片存储方案基础上推进新功能或进一步优化兼容迁移。
 - 2026-05-29：[Agent-C] 完成下一轮存储架构优化。新增 `useImageStore`，将本地上传图片保存到 IndexedDB，Board / Asset 中只保留 `mw-image://...` 轻量引用；`ImageCard`、`AssetLibrary` 和 PNG 导出均已接入引用解析；旧版 `data:image/...` 图片会在加载时后台迁移到 IndexedDB。Chrome DevTools MCP 已验证 IndexedDB 图片可正常渲染，localStorage 只保存短引用，PNG 导出可解析 IndexedDB 图片。
 - 2026-05-29：[Agent-C] 修复 localStorage 配额超限引发的未处理异常。`useBoard` 和 `useAssets` 的持久化写入现在会捕获 `QuotaExceededError` 并在界面展示可读提示，不再让 Vue watcher 直接崩溃；本地上传图片改为先压缩为较小的 WebP data URL，降低触发配额上限的概率。已用 Chrome DevTools MCP 验证在受控配额超限场景下只出现可控 warning，不再出现 `Uncaught (in promise)`。

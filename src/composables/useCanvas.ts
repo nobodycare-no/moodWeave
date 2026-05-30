@@ -1,9 +1,10 @@
 import { computed, ref } from 'vue'
 import { useBoard } from './useBoard'
-import type { Card } from '../types'
+import type { Card, Connection } from '../types'
 
 const selectedCardId = ref<string | null>(null)
 const editingCardId = ref<string | null>(null)
+const connectionSourceId = ref<string | null>(null)
 const editDraft = ref('')
 
 const DEFAULT_TEXT_CONTENT = 'Double-click to edit text'
@@ -24,12 +25,17 @@ export function useCanvas() {
   const { currentBoard } = useBoard()
 
   const cards = computed(() => currentBoard.value?.cards ?? [])
+  const connections = computed(() => currentBoard.value?.connections ?? [])
   const selectedCard = computed(
     () => cards.value.find((card) => card.id === selectedCardId.value) ?? null,
   )
   const editingCard = computed(
     () => cards.value.find((card) => card.id === editingCardId.value) ?? null,
   )
+  const connectionSource = computed(
+    () => cards.value.find((card) => card.id === connectionSourceId.value) ?? null,
+  )
+  const isConnecting = computed(() => connectionSource.value !== null)
 
   function touchBoard() {
     if (currentBoard.value) {
@@ -74,12 +80,18 @@ export function useCanvas() {
     }
 
     currentBoard.value.cards.splice(index, 1)
+    currentBoard.value.connections = currentBoard.value.connections.filter(
+      (connection) => connection.fromCardId !== id && connection.toCardId !== id,
+    )
     if (selectedCardId.value === id) {
       selectedCardId.value = null
     }
     if (editingCardId.value === id) {
       editingCardId.value = null
       editDraft.value = ''
+    }
+    if (connectionSourceId.value === id) {
+      connectionSourceId.value = null
     }
     touchBoard()
 
@@ -119,10 +131,64 @@ export function useCanvas() {
     return true
   }
 
+  function canConnectCards(fromCardId: string, toCardId: string): boolean {
+    if (!currentBoard.value || fromCardId === toCardId) {
+      return false
+    }
+
+    const fromCard = cards.value.find((entry) => entry.id === fromCardId)
+    const toCard = cards.value.find((entry) => entry.id === toCardId)
+    if (!fromCard || !toCard || fromCard.type === toCard.type) {
+      return false
+    }
+
+    return !connections.value.some((connection) => {
+      return (
+        (connection.fromCardId === fromCardId && connection.toCardId === toCardId) ||
+        (connection.fromCardId === toCardId && connection.toCardId === fromCardId)
+      )
+    })
+  }
+
+  function addConnection(fromCardId: string, toCardId: string): Connection | null {
+    if (!currentBoard.value || !canConnectCards(fromCardId, toCardId)) {
+      return null
+    }
+
+    const connection: Connection = {
+      id: createId('connection'),
+      fromCardId,
+      toCardId,
+      createdAt: new Date().toISOString(),
+    }
+
+    currentBoard.value.connections.push(connection)
+    touchBoard()
+    return connection
+  }
+
+  function startConnection(): boolean {
+    if (!selectedCard.value) {
+      return false
+    }
+
+    connectionSourceId.value = selectedCard.value.id
+    return true
+  }
+
+  function cancelConnection() {
+    connectionSourceId.value = null
+  }
+
   function selectCard(id: string) {
     const card = cards.value.find((entry) => entry.id === id)
     if (!card) {
       return
+    }
+
+    if (connectionSourceId.value && connectionSourceId.value !== id) {
+      addConnection(connectionSourceId.value, id)
+      connectionSourceId.value = null
     }
 
     selectedCardId.value = id
@@ -132,6 +198,7 @@ export function useCanvas() {
 
   function deselectAll() {
     selectedCardId.value = null
+    connectionSourceId.value = null
   }
 
   function beginTextEdit(id: string): boolean {
@@ -174,12 +241,20 @@ export function useCanvas() {
 
   return {
     cards,
+    connections,
     editingCard,
     editDraft,
     editingCardId,
+    connectionSource,
+    connectionSourceId,
+    isConnecting,
     selectedCard,
     selectedCardId,
     addCard,
+    addConnection,
+    startConnection,
+    cancelConnection,
+    canConnectCards,
     removeCard,
     removeSelectedCard,
     beginTextEdit,

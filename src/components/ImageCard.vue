@@ -6,6 +6,7 @@ import { useResolvedImageSource } from '../composables/useImageStore'
 import { useZoom } from '../composables/useZoom'
 
 const props = defineProps<{
+  connectionSource: boolean
   card: Card
   selected: boolean
 }>()
@@ -72,7 +73,7 @@ function endDrag(event: PointerEvent) {
 <template>
   <article
     class="image-card"
-    :class="{ selected, dragging: isDragging }"
+    :class="{ selected, dragging: isDragging, 'connection-source': connectionSource }"
     :style="cardStyle"
     @pointerdown="startDrag"
     @pointermove="moveDrag"
@@ -114,6 +115,11 @@ function endDrag(event: PointerEvent) {
 .image-card.selected {
   border-color: rgba(233, 69, 96, 0.76);
   box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.18), var(--shadow-lg);
+}
+
+.image-card.connection-source {
+  border-color: rgba(255, 207, 112, 0.9);
+  box-shadow: 0 0 0 3px rgba(255, 207, 112, 0.2), var(--shadow-lg);
 }
 
 .image-card.dragging {

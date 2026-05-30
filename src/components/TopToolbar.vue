@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AddImageBtn from './AddImageBtn.vue'
 import AddTextBtn from './AddTextBtn.vue'
+import ConnectBtn from './ConnectBtn.vue'
 import DeleteBtn from './DeleteBtn.vue'
 import ExportBtn from './ExportBtn.vue'
 </script>
@@ -10,6 +11,7 @@ import ExportBtn from './ExportBtn.vue'
     <AddImageBtn />
     <AddTextBtn />
     <span class="divider" aria-hidden="true"></span>
+    <ConnectBtn />
     <DeleteBtn />
     <span class="divider" aria-hidden="true"></span>
     <ExportBtn />

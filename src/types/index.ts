@@ -9,6 +9,13 @@ export interface Card {
   zIndex: number
 }
 
+export interface Connection {
+  id: string
+  fromCardId: string
+  toCardId: string
+  createdAt: string
+}
+
 export interface Asset {
   id: string
   type: Card['type']
@@ -21,6 +28,7 @@ export interface Board {
   id: string
   name: string
   cards: Card[]
+  connections: Connection[]
   createdAt: string
   updatedAt: string
 }

@@ -5,6 +5,7 @@ import { useCanvas } from '../composables/useCanvas'
 import { useZoom } from '../composables/useZoom'
 
 const props = defineProps<{
+  connectionSource: boolean
   card: Card
   selected: boolean
 }>()
@@ -73,7 +74,7 @@ function editCard() {
 <template>
   <article
     class="text-card"
-    :class="{ selected, dragging: isDragging }"
+    :class="{ selected, dragging: isDragging, 'connection-source': connectionSource }"
     :style="cardStyle"
     @pointerdown="startDrag"
     @pointermove="moveDrag"
@@ -111,6 +112,11 @@ function editCard() {
 .text-card.selected {
   border-color: rgba(233, 69, 96, 0.76);
   box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.18), var(--shadow-lg);
+}
+
+.text-card.connection-source {
+  border-color: rgba(255, 207, 112, 0.9);
+  box-shadow: 0 0 0 3px rgba(255, 207, 112, 0.2), var(--shadow-lg);
 }
 
 .text-card.dragging {

@@ -1,5 +1,5 @@
 import { computed, ref, watch } from 'vue'
-import type { Board, Card, StorageData } from '../types'
+import type { Board, Card, Connection, StorageData } from '../types'
 import { isInlineImageSource, storeInlineImageSource } from './useImageStore'
 
 const STORAGE_KEY = 'moodweave.boards.v1'
@@ -53,13 +53,39 @@ function createCard(raw: unknown): Card | null {
   }
 }
 
-function createBoardRecord(name: string, cards: Card[] = []): Board {
+function createConnection(raw: unknown, cards: Card[]): Connection | null {
+  if (!isRecord(raw)) {
+    return null
+  }
+
+  const fromCardId = toStringValue(raw.fromCardId)
+  const toCardId = toStringValue(raw.toCardId)
+  if (
+    !fromCardId ||
+    !toCardId ||
+    fromCardId === toCardId ||
+    !cards.some((card) => card.id === fromCardId) ||
+    !cards.some((card) => card.id === toCardId)
+  ) {
+    return null
+  }
+
+  return {
+    id: toStringValue(raw.id, createId('connection')),
+    fromCardId,
+    toCardId,
+    createdAt: toStringValue(raw.createdAt, new Date().toISOString()),
+  }
+}
+
+function createBoardRecord(name: string, cards: Card[] = [], connections: Connection[] = []): Board {
   const now = new Date().toISOString()
 
   return {
     id: createId('board'),
     name,
     cards,
+    connections,
     createdAt: now,
     updatedAt: now,
   }
@@ -73,11 +99,17 @@ function normalizeBoard(raw: unknown, index: number): Board | null {
   const cards = Array.isArray(raw.cards)
     ? raw.cards.map(createCard).filter((card): card is Card => card !== null)
     : []
+  const connections = Array.isArray(raw.connections)
+    ? raw.connections
+        .map((connection) => createConnection(connection, cards))
+        .filter((connection): connection is Connection => connection !== null)
+    : []
 
   return {
     id: toStringValue(raw.id, createId('board')),
     name: toStringValue(raw.name, `Board ${index + 1}`),
     cards,
+    connections,
     createdAt: toStringValue(raw.createdAt, new Date().toISOString()),
     updatedAt: toStringValue(raw.updatedAt, new Date().toISOString()),
   }
