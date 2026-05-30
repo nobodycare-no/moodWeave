@@ -76,3 +76,11 @@
 - Moved connection anchors from card centers to card-edge points with a small outside gap so source dots and target arrows are not hidden underneath image/text cards.
 - Synced the same edge-anchor and lighter-line logic into PNG export.
 - Verification: `npm run build` passed; Chrome DevTools MCP verified arrow/dot bounding boxes do not overlap card bounds, PNG export click works, and console has no runtime errors.
+
+## 2026-05-30 Agent-C one-click startup update
+
+- Added a Windows-friendly `start.bat` plus `scripts/start.ps1` to check Node/npm, install dependencies when `node_modules` is missing, and start the dev server.
+- Added `scripts/start.sh` for macOS/Linux users and documented the same startup flow in README.
+- Added `npm start` as the canonical local start command backed by `vite --host 127.0.0.1 --port 5173`.
+- Expanded README with Node.js version requirements, one-click startup instructions, manual startup instructions, AI config notes, and common troubleshooting steps.
+- Verification: `powershell -ExecutionPolicy Bypass -File scripts/start.ps1 -CheckOnly` passed; `npm run build` passed. The current Windows environment does not provide `sh`, so the shell script was not executable in this session.
