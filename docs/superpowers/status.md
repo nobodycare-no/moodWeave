@@ -90,3 +90,9 @@
 - Updated `npm start` to run Vite with `--open`, so `start.bat`, `scripts/start.ps1`, `scripts/start.sh`, and manual `npm start` all open the browser automatically after the dev server starts.
 - Updated startup script messages and README to explain the automatic browser open behavior plus the fallback URL.
 - Verification: `powershell -ExecutionPolicy Bypass -File scripts/start.ps1 -CheckOnly` passed; `npm run build` passed.
+
+## 2026-05-30 Agent-C local storage origin fix
+
+- Root cause: browser localStorage and IndexedDB are scoped by origin, so `localhost:5173` and `127.0.0.1:5173` show different MoodWeave data.
+- Changed the one-click startup origin back to `localhost:5173` to keep startup consistent with the original README and Vite default.
+- Updated README with a persistence note and recovery command for users who previously saved data under `127.0.0.1:5173`.

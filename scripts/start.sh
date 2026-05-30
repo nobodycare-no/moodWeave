@@ -54,5 +54,5 @@ if [ "$CHECK_ONLY" = "--check" ]; then
 fi
 
 step "Starting MoodWeave"
-printf 'The browser should open automatically. If it does not, visit http://127.0.0.1:5173.\n'
+printf 'The browser should open automatically. If it does not, visit http://localhost:5173.\n'
 npm run start

@@ -73,5 +73,5 @@ if ($CheckOnly) {
 }
 
 Write-Step "Starting MoodWeave"
-Write-Host "The browser should open automatically. If it does not, visit http://127.0.0.1:5173."
+Write-Host "The browser should open automatically. If it does not, visit http://localhost:5173."
 npm run start
