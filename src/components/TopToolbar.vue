@@ -4,11 +4,13 @@ import AddTextBtn from './AddTextBtn.vue'
 import ConnectBtn from './ConnectBtn.vue'
 import DeleteBtn from './DeleteBtn.vue'
 import ExportBtn from './ExportBtn.vue'
+import GenerateImageBtn from './GenerateImageBtn.vue'
 </script>
 
 <template>
   <div class="top-toolbar" role="toolbar" aria-label="Canvas actions">
     <AddImageBtn />
+    <GenerateImageBtn />
     <AddTextBtn />
     <span class="divider" aria-hidden="true"></span>
     <ConnectBtn />

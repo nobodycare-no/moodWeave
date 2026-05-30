@@ -159,12 +159,30 @@ export function useCanvas() {
       id: createId('connection'),
       fromCardId,
       toCardId,
+      label: '',
       createdAt: new Date().toISOString(),
     }
 
     currentBoard.value.connections.push(connection)
     touchBoard()
     return connection
+  }
+
+  function updateConnectionLabel(id: string, label: string): boolean {
+    const connection = connections.value.find((entry) => entry.id === id)
+    if (!connection) {
+      return false
+    }
+
+    const nextLabel = label.trim()
+    if (connection.label === nextLabel) {
+      return false
+    }
+
+    connection.label = nextLabel
+    touchBoard()
+
+    return true
   }
 
   function startConnection(): boolean {
@@ -255,6 +273,7 @@ export function useCanvas() {
     startConnection,
     cancelConnection,
     canConnectCards,
+    updateConnectionLabel,
     removeCard,
     removeSelectedCard,
     beginTextEdit,

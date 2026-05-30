@@ -86,6 +86,39 @@ function drawConnection(
   context.restore()
 }
 
+function drawConnectionLabel(context: CanvasRenderingContext2D, label: string, x: number, y: number) {
+  const trimmed = label.trim()
+  if (!trimmed) {
+    return
+  }
+
+  context.save()
+  context.font = '700 13px Inter, Arial, sans-serif'
+  context.textBaseline = 'top'
+
+  const maxWidth = 180
+  const lines = wrapText(context, trimmed, maxWidth - 20).slice(0, 3)
+  const measuredWidth = Math.min(
+    maxWidth,
+    Math.max(...lines.map((line) => context.measureText(line).width), 42) + 20,
+  )
+  const labelHeight = lines.length * 18 + 10
+  const labelX = x - measuredWidth / 2
+  const labelY = y - labelHeight / 2
+
+  roundedRect(context, labelX, labelY, measuredWidth, labelHeight, 8)
+  context.fillStyle = 'rgba(22, 33, 62, 0.94)'
+  context.fill()
+  context.strokeStyle = 'rgba(255, 207, 112, 0.44)'
+  context.lineWidth = 1
+  context.stroke()
+  context.fillStyle = '#ffffff'
+  lines.forEach((line, index) => {
+    context.fillText(line, labelX + 10, labelY + 5 + index * 18)
+  })
+  context.restore()
+}
+
 function wrapText(context: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {
   const paragraphs = text.split('\n')
   const lines: string[] = []
@@ -257,16 +290,21 @@ export function useExport() {
           continue
         }
 
-        drawConnection(
+        const from = {
+          x: fromCard.x - originX + fromCard.width / 2,
+          y: fromCard.y - originY + fromCard.height / 2,
+        }
+        const to = {
+          x: toCard.x - originX + toCard.width / 2,
+          y: toCard.y - originY + toCard.height / 2,
+        }
+
+        drawConnection(context, from, to)
+        drawConnectionLabel(
           context,
-          {
-            x: fromCard.x - originX + fromCard.width / 2,
-            y: fromCard.y - originY + fromCard.height / 2,
-          },
-          {
-            x: toCard.x - originX + toCard.width / 2,
-            y: toCard.y - originY + toCard.height / 2,
-          },
+          connection.label,
+          (from.x + to.x) / 2,
+          (from.y + to.y) / 2,
         )
       }
 

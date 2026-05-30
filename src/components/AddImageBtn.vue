@@ -9,12 +9,13 @@ const fileInput = ref<HTMLInputElement | null>(null)
 const imageUrl = ref('')
 const isPanelOpen = ref(false)
 const errorMessage = ref('')
-const panelPosition = ref({ left: 0, top: 0, width: 300 })
+const panelPosition = ref({ left: 0, top: 0, width: 300, maxHeight: 320 })
 const MAX_IMAGE_EDGE = 1600
 const IMAGE_QUALITY = 0.84
 
 const panelStyle = computed(() => ({
   left: `${panelPosition.value.left}px`,
+  maxHeight: `${panelPosition.value.maxHeight}px`,
   top: `${panelPosition.value.top}px`,
   width: `${panelPosition.value.width}px`,
 }))
@@ -37,6 +38,7 @@ function updatePanelPosition() {
 
   panelPosition.value = {
     left,
+    maxHeight: Math.max(160, window.innerHeight - top - viewportPadding),
     top,
     width,
   }
@@ -259,6 +261,7 @@ onBeforeUnmount(() => {
   background: rgba(22, 33, 62, 0.96);
   box-shadow: var(--shadow-lg);
   backdrop-filter: blur(var(--glass-blur));
+  overflow: auto;
 }
 
 .upload-button {

@@ -13,6 +13,7 @@ export interface Connection {
   id: string
   fromCardId: string
   toCardId: string
+  label: string
   createdAt: string
 }
 

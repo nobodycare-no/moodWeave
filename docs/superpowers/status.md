@@ -43,3 +43,11 @@
 - 2026-05-28：[SOLO] 建立多 AI 协作协议体系。创建 `docs/superpowers/AGENTS.md`、`HANDOFF.md`、`REVIEW.md`。
 - 2026-05-28：[SOLO] Step 1 完成。Vue 3 + Vite + TS 脚手架 + 暗色霓虹主题 + Board/Card 类型定义 + App.vue 欢迎页。
 - 2026-05-28：[SOLO] 项目定稿：MoodWeave 灵感情绪板，布局B(双栏) + 暗色霓虹主题。设计文档和分步计划完成。
+
+## 2026-05-30 Agent-C update
+
+- Added editable labels to image/text connections. Labels are stored on `Connection.label`, normalized for old boards, rendered on the canvas, persisted after reload, and drawn into PNG exports.
+- Added local/private PackyCode-compatible AI image generation. `.env.example` reserves `VITE_PACKYCODE_BASE_URL`, `VITE_PACKYCODE_API_KEY`, `VITE_IMAGE_MODEL=gpt-image-2`, and `VITE_IMAGE_SIZE`.
+- Added an `AI image` toolbar popover. Selected text cards can seed the prompt; missing API keys show a readable UI message without runtime errors.
+- Tightened popover viewport bounds for Add image and AI image panels.
+- Verification: `npm run build` passed; Chrome DevTools MCP verified connection label edit/persistence, missing-key generation handling, Add image panel behavior, PNG export click, and no new console errors.

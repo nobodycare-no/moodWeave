@@ -74,6 +74,7 @@ function createConnection(raw: unknown, cards: Card[]): Connection | null {
     id: toStringValue(raw.id, createId('connection')),
     fromCardId,
     toCardId,
+    label: typeof raw.label === 'string' ? raw.label : '',
     createdAt: toStringValue(raw.createdAt, new Date().toISOString()),
   }
 }
