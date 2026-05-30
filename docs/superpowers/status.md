@@ -84,3 +84,9 @@
 - Added `npm start` as the canonical local start command backed by `vite --host 127.0.0.1 --port 5173`.
 - Expanded README with Node.js version requirements, one-click startup instructions, manual startup instructions, AI config notes, and common troubleshooting steps.
 - Verification: `powershell -ExecutionPolicy Bypass -File scripts/start.ps1 -CheckOnly` passed; `npm run build` passed. The current Windows environment does not provide `sh`, so the shell script was not executable in this session.
+
+## 2026-05-30 Agent-C startup browser auto-open update
+
+- Updated `npm start` to run Vite with `--open`, so `start.bat`, `scripts/start.ps1`, `scripts/start.sh`, and manual `npm start` all open the browser automatically after the dev server starts.
+- Updated startup script messages and README to explain the automatic browser open behavior plus the fallback URL.
+- Verification: `powershell -ExecutionPolicy Bypass -File scripts/start.ps1 -CheckOnly` passed; `npm run build` passed.
