@@ -28,6 +28,10 @@ function base64ToBlob(base64: string, mimeType = 'image/png'): Blob {
   return new Blob([bytes], { type: mimeType })
 }
 
+function mimeTypeFromOutputFormat(outputFormat: string): string {
+  return outputFormat === 'jpeg' ? 'image/jpeg' : 'image/png'
+}
+
 async function tryStoreRemoteImage(url: string): Promise<string> {
   try {
     const response = await fetch(url)
@@ -71,12 +75,18 @@ export function useImageGeneration() {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${config.value.apiKey}`,
+          Accept: '*/*',
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          background: config.value.background,
           model: config.value.model,
+          moderation: config.value.moderation,
+          n: 1,
+          output_format: config.value.outputFormat,
           prompt: trimmedPrompt,
-          response_format: 'b64_json',
+          quality: config.value.quality,
+          response_format: config.value.responseFormat,
           size: config.value.size,
         }),
       })
@@ -88,7 +98,9 @@ export function useImageGeneration() {
 
       const image = payload.data?.[0]
       if (image?.b64_json) {
-        return saveImageBlob(base64ToBlob(image.b64_json))
+        return saveImageBlob(
+          base64ToBlob(image.b64_json, mimeTypeFromOutputFormat(config.value.outputFormat)),
+        )
       }
 
       if (image?.url) {

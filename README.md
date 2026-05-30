@@ -58,9 +58,16 @@ VITE_PACKYCODE_BASE_URL=https://www.packyapi.com/v1
 VITE_PACKYCODE_API_KEY=your_key_here
 VITE_IMAGE_MODEL=gpt-image-2
 VITE_IMAGE_SIZE=1024x1024
+VITE_IMAGE_QUALITY=auto
+VITE_IMAGE_RESPONSE_FORMAT=b64_json
+VITE_IMAGE_OUTPUT_FORMAT=png
+VITE_IMAGE_BACKGROUND=opaque
+VITE_IMAGE_MODERATION=auto
 ```
 
-The default model is `gpt-image-2`. Generated base64 images are stored in IndexedDB through the same lightweight `mw-image://...` reference flow used by uploaded images. If the proxy returns only a remote image URL, MoodWeave will try to store the blob locally and fall back to the URL if the browser blocks the fetch.
+The default model is `gpt-image-2`. PackyAPI requires a Sora-group token for this model. MoodWeave uses the recommended Images API endpoint, `POST /v1/images/generations`, with `n: 1`. Generated base64 images are stored in IndexedDB through the same lightweight `mw-image://...` reference flow used by uploaded images. If you set `VITE_IMAGE_RESPONSE_FORMAT=url`, MoodWeave will try to store the returned image blob locally and fall back to the URL if the browser blocks the fetch.
+
+PackyAPI notes that `response_format=url` is easiest for manual saving, while `b64_json` is suitable when a program saves the image itself. MoodWeave defaults to `b64_json` so generated images stay in the local IndexedDB image store. PackyAPI recommends `png` or `jpeg` for `output_format`; `webp` is intentionally not exposed in the default config.
 
 Because Vite `VITE_*` variables are exposed to browser code, this configuration is only appropriate for local/private usage. For shared or production usage, place the PackyCode key behind a backend proxy and let the frontend call that proxy instead.
 

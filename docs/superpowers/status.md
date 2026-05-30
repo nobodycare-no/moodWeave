@@ -51,3 +51,9 @@
 - Added an `AI image` toolbar popover. Selected text cards can seed the prompt; missing API keys show a readable UI message without runtime errors.
 - Tightened popover viewport bounds for Add image and AI image panels.
 - Verification: `npm run build` passed; Chrome DevTools MCP verified connection label edit/persistence, missing-key generation handling, Add image panel behavior, PNG export click, and no new console errors.
+
+## 2026-05-30 Agent-C PackyAPI config update
+
+- Rechecked PackyAPI GPT-Image-2 docs at `https://docs.packyapi.com/docs/paint/GPTImage.html`.
+- Updated image generation request config to match the Images API guidance: `/v1/images/generations`, Sora-token bearer auth, `n: 1`, `quality`, `response_format`, `output_format`, `background`, and `moderation`.
+- Extended `.env.example` and README with PackyAPI-supported image parameters. MoodWeave keeps `response_format=b64_json` by default because it saves generated images into IndexedDB; users can switch to `url` if they prefer Packy download links.
