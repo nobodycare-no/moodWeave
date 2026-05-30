@@ -64,3 +64,8 @@
 - Reworked connection visuals with type-aware color themes, a glow/shadow track, a crisp gradient line, source dots, and larger explicit target arrows so direction is easier to read.
 - Synced the same connection direction styling into PNG export.
 - Verification: `npm run build` passed; Chrome DevTools MCP verified canvas-stage transform changes after blank-canvas drag, connection SVG markers render, PNG export click works, and console has no runtime errors.
+
+## 2026-05-30 Agent-C popover dismissal update
+
+- Updated Add image and AI image popovers to close when focus or pointer interaction moves outside the button/panel instead of requiring a second click on the same toolbar button.
+- Verification: `npm run build` passed; Chrome DevTools MCP verified outside-click dismissal, focus-out dismissal, and no runtime console errors.

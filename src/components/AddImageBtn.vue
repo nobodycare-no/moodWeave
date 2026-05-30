@@ -6,6 +6,7 @@ import { saveImageBlob } from '../composables/useImageStore'
 const { addCard } = useCanvas()
 const buttonRef = ref<HTMLButtonElement | null>(null)
 const fileInput = ref<HTMLInputElement | null>(null)
+const panelRef = ref<HTMLDivElement | null>(null)
 const imageUrl = ref('')
 const isPanelOpen = ref(false)
 const errorMessage = ref('')
@@ -55,6 +56,22 @@ async function togglePanel() {
 
 function closePanel() {
   isPanelOpen.value = false
+}
+
+function isInsidePanelTarget(target: EventTarget | null): boolean {
+  if (!(target instanceof Node)) {
+    return false
+  }
+
+  return Boolean(buttonRef.value?.contains(target) || panelRef.value?.contains(target))
+}
+
+function closePanelIfOutside(event: Event) {
+  if (!isPanelOpen.value || isInsidePanelTarget(event.target)) {
+    return
+  }
+
+  closePanel()
 }
 
 function openFilePicker() {
@@ -162,6 +179,8 @@ function addFromUrl() {
 if (typeof window !== 'undefined') {
   window.addEventListener('resize', updatePanelPosition)
   window.addEventListener('scroll', updatePanelPosition, true)
+  window.addEventListener('pointerdown', closePanelIfOutside, true)
+  window.addEventListener('focusin', closePanelIfOutside)
 }
 
 onBeforeUnmount(() => {
@@ -171,6 +190,8 @@ onBeforeUnmount(() => {
 
   window.removeEventListener('resize', updatePanelPosition)
   window.removeEventListener('scroll', updatePanelPosition, true)
+  window.removeEventListener('pointerdown', closePanelIfOutside, true)
+  window.removeEventListener('focusin', closePanelIfOutside)
 })
 </script>
 
@@ -188,7 +209,13 @@ onBeforeUnmount(() => {
     </button>
 
     <Teleport to="body">
-      <div v-if="isPanelOpen" class="add-panel" :style="panelStyle" @keydown.esc="closePanel">
+      <div
+        v-if="isPanelOpen"
+        ref="panelRef"
+        class="add-panel"
+        :style="panelStyle"
+        @keydown.esc="closePanel"
+      >
         <button class="upload-button" type="button" @click="openFilePicker">Upload image</button>
         <input
           ref="fileInput"

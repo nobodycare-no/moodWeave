@@ -7,6 +7,7 @@ const { addCard, selectedCard } = useCanvas()
 const { generateImage, generationError, isConfigured, isGenerating } = useImageGeneration()
 
 const buttonRef = ref<HTMLButtonElement | null>(null)
+const panelRef = ref<HTMLFormElement | null>(null)
 const isPanelOpen = ref(false)
 const promptDraft = ref('')
 const panelPosition = ref({ left: 0, top: 0, width: 340, maxHeight: 420 })
@@ -66,6 +67,22 @@ function closePanel() {
   isPanelOpen.value = false
 }
 
+function isInsidePanelTarget(target: EventTarget | null): boolean {
+  if (!(target instanceof Node)) {
+    return false
+  }
+
+  return Boolean(buttonRef.value?.contains(target) || panelRef.value?.contains(target))
+}
+
+function closePanelIfOutside(event: Event) {
+  if (!isPanelOpen.value || isInsidePanelTarget(event.target)) {
+    return
+  }
+
+  closePanel()
+}
+
 async function submitPrompt() {
   try {
     const imageRef = await generateImage(promptDraft.value)
@@ -85,6 +102,8 @@ watch(selectedTextPrompt, (nextPrompt) => {
 if (typeof window !== 'undefined') {
   window.addEventListener('resize', updatePanelPosition)
   window.addEventListener('scroll', updatePanelPosition, true)
+  window.addEventListener('pointerdown', closePanelIfOutside, true)
+  window.addEventListener('focusin', closePanelIfOutside)
 }
 
 onBeforeUnmount(() => {
@@ -94,6 +113,8 @@ onBeforeUnmount(() => {
 
   window.removeEventListener('resize', updatePanelPosition)
   window.removeEventListener('scroll', updatePanelPosition, true)
+  window.removeEventListener('pointerdown', closePanelIfOutside, true)
+  window.removeEventListener('focusin', closePanelIfOutside)
 })
 </script>
 
@@ -114,6 +135,7 @@ onBeforeUnmount(() => {
     <Teleport to="body">
       <form
         v-if="isPanelOpen"
+        ref="panelRef"
         class="generate-panel"
         :style="panelStyle"
         @submit.prevent="submitPrompt"
