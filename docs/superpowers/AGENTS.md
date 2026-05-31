@@ -1,18 +1,23 @@
 # MoodWeave - AI Agent 多智能体协作协议
 
-> 版本：v2.1
-> 本文件是 AI 与 AI 之间协作的核心规范。任何 AI 开始工作前必须先读本文件。
+> 版本：v2.2
+> 本文件是 AI 与 AI 之间协作的核心规范。**任何 AI 开始工作前必须先读本文件。**
 
 ---
 
-## 1. 身份识别
+## 1. 🆔 智能体身份识别 & 分支策略
 
-每个 AI 通过 Git 身份标识自己，commit 历史就是身份名片。
+每个 AI 使用不同的 Git 身份提交代码，并推送到自己的专属分支。
 
-| 身份 | Git Author | 场景 |
-|------|-----------|------|
-| **SOLO**（家用） | `SOLO <solo@moodweave.dev>` | Home 电脑 |
-| **Agent-C** | `Agent-C <agent-c@moodweave.dev>` | 公司电脑 |
+| 身份 | Git Author | 分支 | 场景 |
+|------|-----------|------|------|
+| **SOLO** (我) | `SOLO <solo@moodweave.dev>` | `solo-*` | Home 电脑开发 |
+| **Agent-C** | `Agent-C <agent-c@moodweave.dev>` | `main` | 公司电脑开发 |
+
+**分支规则：**
+- **`main`** — Agent-C 专属。只接受 Agent-C 的提交。
+- **`solo-*`** — SOLO 专属。命名如 `solo/iteration-2`、`solo/feature-xyz`。
+- **合并时机**：用户说「合并分支」时，发起 PR 将 SOLO 分支合并到 main。
 
 ---
 
@@ -21,11 +26,14 @@
 ```text
 用户说“继续 MoodWeave”
         ↓
-1. git pull
-2. 身份识别：git log --oneline -3
-3. 交接判断：读 status.md + HANDOFF.md + REVIEW.md
-4. 按需审查最近一次交付
-5. 开始开发
+1. 切到自己的分支
+   - Agent-C: git switch main
+   - SOLO: git switch solo-*
+2. git pull (确保拿到对方最新代码)
+3. 身份识别：git log --oneline -3
+4. 交接判断：读 status.md + HANDOFF.md + REVIEW.md
+5. 按需审查最近一次交付
+6. 开始开发
 ```
 
 ```text
@@ -42,6 +50,18 @@
 ## 3. 开工协议
 
 用户说“继续 MoodWeave”时，必须执行以下步骤：
+
+### Step 0: 切换到自己的分支
+
+```bash
+# Agent-C 在 main 上开发
+git switch main
+
+# SOLO 在 solo-* 分支上开发
+git switch solo-iteration-2   # 或其他 solo-* 分支名
+```
+
+确保你正在自己的分支上，不要误改了对方的分支。
 
 ### Step 1: git pull
 
