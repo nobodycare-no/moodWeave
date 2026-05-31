@@ -5,6 +5,7 @@ import ConnectBtn from './ConnectBtn.vue'
 import DeleteBtn from './DeleteBtn.vue'
 import ExportBtn from './ExportBtn.vue'
 import GenerateImageBtn from './GenerateImageBtn.vue'
+import BackupBtn from './BackupBtn.vue'
 </script>
 
 <template>
@@ -17,6 +18,7 @@ import GenerateImageBtn from './GenerateImageBtn.vue'
     <DeleteBtn />
     <span class="divider" aria-hidden="true"></span>
     <ExportBtn />
+    <BackupBtn />
   </div>
 </template>
 

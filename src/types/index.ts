@@ -35,6 +35,27 @@ export interface Board {
 }
 
 export interface StorageData {
+  schemaVersion: number
   boards: Board[]
   activeBoardId: string | null
 }
+
+export interface BackupPackage {
+  appName: 'moodweave'
+  exportedAt: string
+  schemaVersion: number
+  data: {
+    boards: Board[]
+    assets: Asset[]
+    images: BackupImage[]
+  }
+}
+
+export interface BackupImage {
+  id: string
+  dataUrl: string
+  mimeType: string
+  createdAt: string
+}
+
+export const CURRENT_SCHEMA_VERSION = 1

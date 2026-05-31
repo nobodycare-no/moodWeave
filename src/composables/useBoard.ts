@@ -1,5 +1,6 @@
 import { computed, ref, watch } from 'vue'
 import type { Board, Card, Connection, StorageData } from '../types'
+import { CURRENT_SCHEMA_VERSION } from '../types'
 import { isInlineImageSource, storeInlineImageSource } from './useImageStore'
 
 const STORAGE_KEY = 'moodweave.boards.v1'
@@ -136,7 +137,11 @@ function loadStorage(): StorageData | null {
       ? parsed.boards.map(normalizeBoard).filter((board): board is Board => board !== null)
       : []
 
+    const schemaVersion =
+      typeof parsed.schemaVersion === 'number' ? parsed.schemaVersion : 0
+
     return {
+      schemaVersion,
       boards: loadedBoards,
       activeBoardId: toStringValue(parsed.activeBoardId, ''),
     }
@@ -151,6 +156,7 @@ function persistStorage() {
   }
 
   const payload: StorageData = {
+    schemaVersion: CURRENT_SCHEMA_VERSION,
     boards: boards.value,
     activeBoardId: activeBoardId.value,
   }
